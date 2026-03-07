@@ -1,25 +1,34 @@
 {
-  "game": {
-    "title": "Tap Dodger",
-    "fps": 60
-  },
-
-  "player": {
-    "speed": 5,
-    "jumpForce": 12,
-    "gravity": 0.5
-  },
-
-  "obstacles": {
-    "spawnRate": 2,
-    "speed": 4
-  },
-
-  "controls": {
-    "tap": "jump"
-  },
-
-  "score": {
-    "increment": 10
+  "id": "game001",
+  "type": "sudoku",
+  "title": "Sudoku Challenge",
+  "difficulty": "easy",
+  "timeLimit": 300,
+  "gridSize": 9,
+  "initialGrid": [
+    [5,3,0,0,7,0,0,0,0],
+    [6,0,0,1,9,5,0,0,0],
+    [0,9,8,0,0,0,0,6,0]
+  ],
+  "scoring": {
+    "correctCell": 10,
+    "bonusTime": 5
+  }
+},
+{
+  "id": "game002",
+  "type": "word-builder",
+  "title": "Word Builder",
+  "timeLimit": 120,
+  "letters": ["A","T","P","L","E"],
+  "validWords": [
+    "APPLE",
+    "PET",
+    "TAPE",
+    "LEAP"
+  ],
+  "scoring": {
+    "word": 20,
+    "bonusLength": 5
   }
 }
