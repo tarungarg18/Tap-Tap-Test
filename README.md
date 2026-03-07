@@ -15,11 +15,11 @@ docs/architecture.md
 
 ## Engine Loop
 
-docs/engine-loop.md
+[Architecture Documentation](docs/architecture.md)
 
 ## JSON Configuration
 
-config/game-config.sample.json
+[JSON Configuration](config/game-config.sample.json)
 
 ## Example Game
 
@@ -109,3 +109,4 @@ taptap-game-engine/
 | Leaderboard                      |
 ----------------------------------
 ``
+
