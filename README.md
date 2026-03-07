@@ -24,7 +24,7 @@ config/game-config.sample.json
 ## Example Game
 
 examples/sampleGame.js
-
+```
 taptap-game-engine/
 │
 ├── docs/
@@ -60,7 +60,7 @@ taptap-game-engine/
 ├── README.md
 ├── package.json
 └── .gitignore
-
+```
 
 
 Content:
@@ -152,3 +152,4 @@ function startGameLoop(update, render) {
 }
 
 module.exports = startGameLoop;
+
