@@ -3,18 +3,16 @@
     "title": "TapTap Demo Game",
     "fps": 30
   },
-  "controls": {
-    "scoreKey": "space"
+
+  "player": {
+    "startScore": 0
   },
+
   "rules": {
-<<<<<<< HEAD
     "tapIncrement": 2
-=======
-    "tapIncrement": 8
   },
 
   "controls": {
     "scoreKey": "space"
->>>>>>> 8b15741 (Added Input Logic from JSON)
   }
 }
