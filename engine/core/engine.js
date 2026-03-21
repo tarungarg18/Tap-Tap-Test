@@ -26,6 +26,10 @@ class GameEngine {
             if (!this.running) return;
 
             this.game.update();
+            if (this.game.needsRender) {
+                this.game.render();
+                this.game.needsRender = false;
+            }
 
             setTimeout(loop, 1000 / this.config.game.fps);
 
