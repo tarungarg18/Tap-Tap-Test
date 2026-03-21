@@ -1,0 +1,17 @@
+{
+  "type": "tap",
+  "game": {
+    "title": "Tap Game Hard",
+    "fps": 30
+  },
+  "player": {
+    "startScore": 5
+  },
+  "rules": {
+    "tapIncrement": 3,
+    "targetScore": 50
+  },
+  "controls": {
+    "scoreKey": "hit"
+  }
+}

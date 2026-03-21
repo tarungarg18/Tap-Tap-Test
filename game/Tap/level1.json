@@ -1,0 +1,17 @@
+{
+  "type": "tap",
+  "game": {
+    "title": "Tap Game Easy",
+    "fps": 30
+  },
+  "player": {
+    "startScore": 0
+  },
+  "rules": {
+    "tapIncrement": 1,
+    "targetScore": 10
+  },
+  "controls": {
+    "scoreKey": "tap"
+  }
+}

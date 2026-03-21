@@ -25,39 +25,42 @@ JSON-driven modular game engine.
 
 examples/sampleGame.js
 ```
-taptap-game-engine/
-│
-├── docs/
-│   ├── architecture.md
-│   ├── engine-loop.md
-│   └── reusability-model.md
+TAP-TAP ENGINE
 │
 ├── config/
-│   └── game-config.sample.json
+│     └── game-config.json        (optional global config)
 │
 ├── engine/
-│   ├── core/
-│   │   ├── engine.js
-│   │   ├── gameLoop.js
-│   │   └── eventSystem.js
-│   │
-│   ├── systems/
-│   │   ├── inputSystem.js
-│   │   ├── physicsSystem.js
-│   │   ├── renderSystem.js
-│   │   └── scoreSystem.js
-│   │
-│   ├── entities/
-│   │   ├── player.js
-│   │   └── obstacle.js
-│   │
-│   └── utils/
-│       └── configLoader.js
+│     ├── core/
+│     │     └── engine.js         (game loop + execution)
+│     │
+│     ├── system/
+│     │     ├── inputsystem.js    (captures user input)
+│     │     └── scoresystem.js    (optional / reusable)
+│     │
+│     └── utils/
+│           └── configloader.js   (loads JSON config)
+│
+├── game/
+│     ├── sudoku/
+│     │     ├── game.js           (sudoku logic)
+│     │     ├── level1.json
+│     │     ├── level2.json
+│     │     └── level3.json
+│     │
+│     └── Tap/
+│           ├── game.js           (tap game logic)
+│           ├── level1.json
+│           ├── level2.json
+│           └── level3.json
 │
 ├── examples/
-│   └── sampleGame.js
+│     └── demo.js
+│     └── sampleGame.js
+│     └── DEMO_RUN.ms
 │
-├── README.md
+├── runner.js                     (entry point)
+└── README.md
 ├── package.json
 └── .gitignore
 ```

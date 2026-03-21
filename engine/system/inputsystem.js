@@ -1,25 +1,55 @@
-const readline = require("readline");
-
 class InputSystem {
 
-    constructor(scoreSystem,config) {
-        this.scoreSystem = scoreSystem;
-        this.scoreKey = config.controls.scoreKey;
-        readline.emitKeypressEvents(process.stdin);
+    constructor(game) {
+
+        this.game = game;
+        this.buffer = "";
 
         process.stdin.setRawMode(true);
-        process.stdin.on("keypress", (str, key) => {
+        process.stdin.resume();
+        process.stdin.setEncoding("utf8");
 
-            if (key.name === this.scoreKey) {
-                this.scoreSystem.addScore();
+        process.stdin.on("data", (key) => {
+
+            // ENTER pressed
+            if (key === "\r") {
+                console.log(); // move to next line
+
+                if (this.buffer.length > 0) {
+                    this.game.handleInput(this.buffer);
+                }
+
+                this.buffer = "";
+                process.stdout.write("> ");
+                return;
             }
-            if (key.ctrl && key.name === "c") {
+
+            // BACKSPACE
+            if (key === "\u0008" || key === "\u007f") {
+                if (this.buffer.length > 0) {
+                    this.buffer = this.buffer.slice(0, -1);
+
+                    // erase last char from terminal
+                    process.stdout.write("\b \b");
+                }
+                return;
+            }
+
+            // CTRL+C exit
+            if (key === "\u0003") {
                 process.exit();
             }
+
+            // NORMAL CHARACTER
+            this.buffer += key;
+            process.stdout.write(key);
         });
+
+        // prompt
+        process.stdout.write("> ");
     }
 
-    update(){};
+    update() {}
 
 }
 

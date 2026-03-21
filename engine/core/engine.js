@@ -10,22 +10,27 @@ class GameEngine {
         this.systems.push(system);
     }
 
+    setGame(game) {
+        this.game = game;
+    }
+
     start() {
         console.log("Starting Engine...");
-        console.log("Game:", this.config.game.title);
-        console.log("\nPress SPACE to increase score");
-
+        console.log("Game:", this.config.type);
         this.running = true;
 
+        this.game.init();
+
         const loop = () => {
+
             if (!this.running) return;
-            this.systems.forEach(system => {
-                if (system.update) {
-                    system.update();
-                }
-            });
+
+            this.game.update();
+
             setTimeout(loop, 1000 / this.config.game.fps);
+
         };
+
         loop();
     }
 
