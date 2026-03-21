@@ -9,21 +9,6 @@ JSON-driven modular game engine.
 - Reusable game systems
 - Lightweight and extensible
 
-## Architecture
-
-[Architecture Documentation](docs/architecture.md)
-
-## Engine Loop
-
-[Engine Loop](docs/engine-loop.md)
-
-## JSON Configuration
-
-[JSON Configuration](config/game-config.sample.json)
-
-## Example Game
-
-examples/sampleGame.js
 ```
 TAP-TAP ENGINE
 │
@@ -80,7 +65,6 @@ TAP-TAP ENGINE
 | Timer Manager                                  |
 | Score Manager                                  |
 | Input Handler                                  |
-| Plugin Manager                                 |
 | State Manager                                  |
 +------------+------------------+----------------+
              |                  |
