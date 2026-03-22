@@ -51,7 +51,6 @@ game/
 ---
 
 ## Core Components
-
 ### 1. GameEngine
 - Central controller
 - Handles:
@@ -59,9 +58,7 @@ game/
   - Input processing
   - Rendering
   - Game state transitions
-
 ---
-
 ### 2. Game Modules
 Each game implements:
 
@@ -70,31 +67,34 @@ init()
 handleInput(input)
 update()
 render()
-
+```
+---
 ### 3. InputSystem
-
 - Captures raw keyboard input
 - Sends input to engine
 - No UI logic
-
+---
 ### 4. ScoreSystem
 - Applies score based on:
+
 "rules": {
   "MOVE": 10,
   "INVALID": -5
 }
+
+---
 ### 5. TimerSystem
 - Countdown timer
 - Ends game when time reaches 0
-
+---
 ### 6. Leaderboard
 - Stores scores locally
 - Displays ranked players
-
+---
 ### 7. APIClient
 - Sends score to external API
 - Simulates backend integration
-
+---
 # Game Flow
 ```
 Start Engine
@@ -118,5 +118,7 @@ Repeat
 node runner.js <gameName> <levelFile>
 ```
 eg-
+```
 node runner.js sudoku level1.json
 node runner.js tap level2.json
+```
