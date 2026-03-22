@@ -1,107 +1,122 @@
-# 🚀 Prototype Build — TaPTaP Game Engine
-#### Overview
+# Tap-Tap Game Engine Prototype
 
-This prototype demonstrates a JSON-driven modular game engine capable of running multiple games using a shared execution core. The engine separates game logic, engine systems, and configuration data, ensuring scalability and reusability.
+## Overview
 
+Tap-Tap is a **modular CLI-based game engine** built in Node.js that supports multiple games (e.g., Sudoku, Tap) without modifying core systems.
 
+The engine is fully **config-driven**, meaning:
+- Game behavior is controlled via JSON
+- No changes required in engine for new games
+- Supports scoring, timer, leaderboard, and API integration
 
-# 🧠 Core Idea
+---
+# Core Idea
 
-The engine does not contain any game-specific logic.
-#### Instead:
+- **Separation of Concerns**
+- **Config-driven design**
+- **Plug-and-play game modules**
 
-- The engine handles execution (loop, input, update).
-- The game module defines behavior.
-- The JSON file defines configuration and level data.
+---
 
-# ⚙️ Architecture
+## Project Structure
 ```
-JSON Config → Game Module → Engine → Output
-```
-# 🔁 Execution Flow
-### 1. User Runs
-```
-node runner.js game/<game>/levelX.json
-```
-### 2. Engine
-- Loads JSON configuration
-- Detects game type
-- Initializes game module
-- Starts engine loop
-
-### 3. Input System
-- Captures user input
-- Sends raw input to game
-
-### 4. Game Module
-- Processes input
-- Updates state
-- Renders output
-
-# 🎮 Supported Games
-### 1. Tap Game
-- Input-based scoring system
-#### Configurable:
-- Score increment
-- Target score
-- Input key
-### 2. Sudoku Game
-- Grid-based puzzle
-#### Configurable:
-- Board layout
-- Solution
-- Difficulty levels
-
-# FLow
+engine/
+├── core/
+│ └── engine.js
+│
+├── system/
+│ ├── inputsystem.js
+│ ├── scoresystem.js
+│ ├── timersystem.js
+│ └── leaderboard.js
+│
+├── utils/
+│ ├── configloader.js
+│ └── apiclient.js
+│
+game/
+├── sudoku/
+│ ├── game.js
+│ ├── level1.json
+│ ├── level2.json
+│ └── ...
+│
+├── tap/
+│ ├── game.js
+│ ├── level1.json
+│ └── ...
 
 ```
-node runner.js game/<gameName>/levelX.json
-            │
-            ▼
-     runner.js
-            │
-            ▼
-  Load JSON config (configloader)
-            │
-            ▼
-  Detect game type (tap / sudoku)
-            │
-            ▼
-  Create Game Object
-            │
-            ▼
-  Initialize GameEngine
-            │
-            ▼
-  Attach InputSystem
-            │
-            ▼
-  engine.start()
-            │
-            ▼
-      Game Loop Starts
-            │
-            ▼
-     ┌───────────────┐
-     │   LOOP RUNS   │
-     └───────────────┘
-            │
-            ▼
-   Wait for user input
-            │
-            ▼
- InputSystem captures input
-            │
-            ▼
- game.handleInput(input)
-            │
-            ▼
- Game updates state
-            │
-            ▼
- Game.render()
-            │
-            ▼
- Updated output shown
 
- ```
+---
+
+## Core Components
+
+### 1. GameEngine
+- Central controller
+- Handles:
+  - Game loop
+  - Input processing
+  - Rendering
+  - Game state transitions
+
+---
+
+### 2. Game Modules
+Each game implements:
+
+```js
+init()
+handleInput(input)
+update()
+render()
+
+### 3. InputSystem
+
+- Captures raw keyboard input
+- Sends input to engine
+- No UI logic
+
+### 4. ScoreSystem
+- Applies score based on:
+"rules": {
+  "MOVE": 10,
+  "INVALID": -5
+}
+### 5. TimerSystem
+- Countdown timer
+- Ends game when time reaches 0
+
+### 6. Leaderboard
+- Stores scores locally
+- Displays ranked players
+
+### 7. APIClient
+- Sends score to external API
+- Simulates backend integration
+
+# Game Flow
+```
+Start Engine
+   ↓
+Load Game + Config
+   ↓
+Initialize Systems
+   ↓
+Wait for Input
+   ↓
+Process Input
+   ↓
+Update Game State
+   ↓
+Render Output
+   ↓
+Repeat
+```
+# How To Run
+```
+node runner.js <gameName> <levelFile>
+```
+eg-
+node runner.js sudoku level1.json
+node runner.js tap level2.json
