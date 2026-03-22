@@ -17,7 +17,7 @@ class TapGame {
     }
 
     init() {
-        console.log(`🎮 ${this.config?.game?.title}`);
+        console.log(` ${this.config?.game?.title}`);
     }
 
     handleInput(input) {
