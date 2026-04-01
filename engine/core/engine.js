@@ -1,297 +1,266 @@
-const Leaderboard = require("../system/leaderboard");
-const TimerSystem = require("../system/timersystem");
-const APIClient = require("../utils/apiclient");
-const loadConfig = require("../utils/configloader");
-const path = require("path");
-const ScoreSystem = require("../system/scoresystem");
-const InputSystem = require("../system/inputsystem");
+(function initEngine(globalScope) {
+    const ScoreSystemClass = globalScope.ScoreSystem || (
+        typeof module !== "undefined" && module.exports
+            ? require("../system/scoresystem")
+            : null
+    );
 
-class GameEngine {
-    constructor(config) {
-        this.config = config || {};
-        this.running = false;
-        this.game = null;
-        this.scoreSystem = null;
-        this.ended = false;
-        this.lastMessage = "";
-        this.inputSystem = null;
+    const TimerSystemClass = globalScope.TimerSystem || (
+        typeof module !== "undefined" && module.exports
+            ? require("../system/timersystem")
+            : null
+    );
 
-        this.initSystems();
-    }
+    class GameEngine {
+        constructor(config, options = {}) {
+            this.config = config || {};
 
-    initSystems() {
-        this.timer = new TimerSystem(this.config);
-        this.timer.attachEngine(this);
-
-        this.leaderboard = new Leaderboard(this.config.type || "game");
-    }
-
-    setGame(game) {
-        if (!game || typeof game !== "object") {
-            throw new Error("Invalid game instance");
-        }
-
-        const requiredMethods = ["init", "handleInput", "update", "render"];
-        for (const method of requiredMethods) {
-            if (typeof game[method] !== "function") {
-                throw new Error(`Game missing method: ${method}`);
-            }
-        }
-
-        this.game = game;
-    }
-
-    setScoreSystem(scoreSystem) {
-        this.scoreSystem = scoreSystem;
-    }
-
-    setInputSystem(inputSystem) {
-        this.inputSystem = inputSystem;
-    }
-
-    start() {
-        try {
-            if (!this.game) throw new Error("Game not set");
-
-            console.clear();
-            console.log("Starting Engine...");
-            console.log("Game:", this.config.type);
-
-            this.running = true;
+            this.game = null;
+            this.running = false;
             this.ended = false;
 
-            this.timer.start();
-            this.safeCall(() => this.game.init());
+            this.lastMessage = "";
+            this.lastAction = null;
+            this.endReason = "";
 
-            const fps = this.config?.game?.fps || 10;
+            this.onRender = typeof options.onRender === "function" ? options.onRender : () => {};
+            this.onGameEnd = typeof options.onGameEnd === "function" ? options.onGameEnd : () => {};
 
-            const loop = () => {
-                if (!this.running) return;
+            this.scoreSystem = options.scoreSystem || new ScoreSystemClass(this.config);
+            this.timerSystem = options.timerSystem || new TimerSystemClass(this.config);
 
-                try {
-                    this.safeCall(() => this.game.update());
+            const fps = Number(this.config?.game?.fps);
+            this.fps = Number.isFinite(fps) && fps > 0 ? fps : 30;
+            this.frameDurationMs = 1000 / this.fps;
 
-                    if (this.game.gameOver && !this.ended) {
-                        this.endGame("WIN");
-                        return;
-                    }
+            this.accumulatorMs = 0;
+            this.lastFrameTs = 0;
+            this.rafId = null;
+            this.timeoutId = null;
 
-                    if (this.game.needsRender && !this.ended) {
-                        console.clear();
-
-                        this.safeCall(() => this.game.render());
-
-                        if (this.scoreSystem) {
-                            console.log("\nScore:", this.safeScore());
-                        }
-
-                        console.log(`Time Left: ${this.timer.getTime()}s`);
-
-                        this.game.needsRender = false;
-                        return;
-                    }
-
-                } catch (err) {
-                    this.handleError("LOOP_ERROR", err);
-                }
-
-                setTimeout(loop, 1000 / fps);
-            };
-
-            loop();
-
-        } catch (err) {
-            this.handleError("START_ERROR", err);
+            this.inputSystem = null;
         }
-    }
 
-    receiveInput(input) {
-        try {
-            if (!this.game || this.ended) return;
-
-            const result = this.safeCall(() =>
-                this.game.handleInput(input)
-            );
-
-            if (!result || typeof result !== "object") return;
-
-            if (result.message) {
-                this.lastMessage = result.message || "";
+        setGame(game) {
+            if (!game || typeof game !== "object") {
+                throw new Error("Invalid game instance");
             }
 
-            if (this.scoreSystem) {
-                this.safeCall(() => this.scoreSystem.apply(result));
+            const requiredMethods = ["init", "handleInput", "update", "render"];
+            for (const method of requiredMethods) {
+                if (typeof game[method] !== "function") {
+                    throw new Error(`Game missing method: ${method}`);
+                }
+            }
+
+            this.game = game;
+        }
+
+        setScoreSystem(scoreSystem) {
+            if (scoreSystem && typeof scoreSystem.apply === "function") {
+                this.scoreSystem = scoreSystem;
+            }
+        }
+
+        setInputSystem(inputSystem) {
+            this.inputSystem = inputSystem;
+        }
+
+        resetRuntimeState() {
+            this.running = false;
+            this.ended = false;
+            this.lastMessage = "";
+            this.lastAction = null;
+            this.endReason = "";
+            this.accumulatorMs = 0;
+            this.lastFrameTs = 0;
+
+            if (typeof this.scoreSystem?.reset === "function") {
+                this.scoreSystem.reset(this.config);
+            }
+
+            if (typeof this.timerSystem?.reset === "function") {
+                this.timerSystem.reset(this.config);
+            }
+        }
+
+        start() {
+            if (!this.game) {
+                throw new Error("Game not set");
+            }
+
+            this.stopSchedulers();
+            this.resetRuntimeState();
+
+            this.running = true;
+            this.lastFrameTs = this.now();
+
+            this.safeCall(() => this.game.init());
+            this.renderNow();
+            this.scheduleNextFrame();
+        }
+
+        scheduleNextFrame() {
+            if (!this.running) return;
+
+            if (typeof requestAnimationFrame === "function") {
+                this.rafId = requestAnimationFrame((ts) => this.loop(ts));
+                return;
+            }
+
+            this.timeoutId = setTimeout(() => this.loop(this.now()), this.frameDurationMs);
+        }
+
+        loop(timestamp) {
+            if (!this.running || this.ended) return;
+
+            const currentTs = Number.isFinite(timestamp) ? timestamp : this.now();
+            const deltaMs = Math.max(0, currentTs - this.lastFrameTs);
+            this.lastFrameTs = currentTs;
+            this.accumulatorMs += deltaMs;
+
+            while (this.accumulatorMs >= this.frameDurationMs && this.running && !this.ended) {
+                this.timerSystem.update(this.frameDurationMs);
+                this.safeCall(() => this.game.update(this.frameDurationMs / 1000));
+
+                if (this.timerSystem.isExpired()) {
+                    this.endGame("TIME_UP");
+                    break;
+                }
+
+                this.accumulatorMs -= this.frameDurationMs;
+            }
+
+            this.renderNow();
+
+            if (this.running && !this.ended) {
+                this.scheduleNextFrame();
+            }
+        }
+
+        receiveInput(input) {
+            if (!this.running || this.ended || !this.game) return;
+
+            const result = this.safeCall(() => this.game.handleInput(input));
+            if (!result || typeof result !== "object") return;
+
+            this.lastAction = result;
+            if (result.message) {
+                this.lastMessage = result.message;
+            }
+
+            if (this.scoreSystem && typeof this.scoreSystem.apply === "function") {
+                this.scoreSystem.apply(result);
             }
 
             if (result.type === "WIN") {
-                this.game.gameOver = true;
                 this.endGame("WIN");
                 return;
             }
 
             if (result.type === "LOSE") {
-                this.game.gameOver = true;
                 this.endGame("LOSE");
                 return;
             }
 
-            this.game.needsRender = true;
             this.renderNow();
-
-        } catch (err) {
-            this.handleError("INPUT_ERROR", err);
         }
-    }
 
-    safeScore() {
-        try {
-            return this.scoreSystem?.getScore() ?? 0;
-        } catch {
-            return 0;
+        getSnapshot() {
+            const gameState = typeof this.game?.getState === "function"
+                ? this.game.getState() || {}
+                : {};
+
+            return {
+                config: this.config,
+                running: this.running,
+                ended: this.ended,
+                reason: this.endReason,
+                message: this.lastMessage,
+                action: this.lastAction,
+                score: this.safeScore(),
+                timeLeft: this.timerSystem.getTime(),
+                gameState
+            };
         }
-    }
 
-    renderNow() {
-        try {
+        renderNow() {
+            const snapshot = this.getSnapshot();
+
+            if (typeof this.game?.render === "function") {
+                this.safeCall(() => this.game.render());
+            }
+
+            this.onRender(snapshot);
+        }
+
+        endGame(reason = "FINISHED") {
             if (this.ended) return;
 
-            console.clear();
-
-            this.safeCall(() => this.game.render());
-
-            if (this.lastMessage) {
-                console.log("\n" + this.lastMessage);
-            }
-
-            if (this.scoreSystem) {
-                console.log("\nScore:", this.safeScore());
-            }
-
-            console.log(`Time Left: ${this.timer.getTime()}s`);
-
-            this.game.needsRender = false;
-
-        } catch (err) {
-            this.handleError("RENDER_ERROR", err);
-        }
-    }
-
-    async endGame(reason = "FINISHED") {
-        if (this.ended) return;
-        this.ended = true;
-
-        try {
+            this.endReason = reason;
+            this.ended = true;
             this.running = false;
-            this.timer.stop();
+            this.stopSchedulers();
 
-            console.log("\n Game Ended:", reason);
+            const snapshot = this.getSnapshot();
+            this.onRender(snapshot);
+            this.onGameEnd(snapshot);
+        }
 
-            const finalScore = this.safeScore();
-
-            try {
-                process.stdin.setRawMode(false);
-            } catch {}
-
-
-            const name = await this.getPlayerName();
-
-            this.leaderboard.addEntry(name, finalScore);
-            this.leaderboard.display();
-
-            await APIClient.submitScore({
-                name,
-                score: finalScore,
-                game: this.config.type,
-                reason
-            });
-
-            const nextLevel = this.getNextLevel();
-            if (reason === "WIN" && nextLevel) {
-                console.log(`\n Loading ${nextLevel}...\n`);
-
-                const configPath = path.join(
-                    process.cwd(),
-                    "game",
-                    this.config.type,
-                    nextLevel
-                );
-
-                const newConfig = loadConfig(configPath);
-
-                if (!newConfig || Object.keys(newConfig).length === 0) {
-                    console.log("No more levels. Game completed!");
-                    process.exit();
-                }
-
-                const GameClass = this.game.constructor;
-
-                this.config = newConfig;
-                this.game = new GameClass(newConfig);
-                this.scoreSystem = new ScoreSystem(newConfig);
-
-                this.initSystems();
-
-                this.running = false;
-                this.ended = false;
-                process.stdin.removeAllListeners("data");
-
-                new InputSystem(this);
-
-                this.start();
-                return;
+        stopSchedulers() {
+            if (this.rafId && typeof cancelAnimationFrame === "function") {
+                cancelAnimationFrame(this.rafId);
+                this.rafId = null;
             }
 
-        } catch (err) {
-            this.handleError("END_ERROR", err);
+            if (this.timeoutId) {
+                clearTimeout(this.timeoutId);
+                this.timeoutId = null;
+            }
         }
 
-        console.log("\n Exiting...");
-
-        process.stdin.pause();
-        process.stdin.removeAllListeners("data");
-
-        process.exit();
-    }
-
-    onGameEnd(reason) {
-        this.endGame(reason);
-    }
-
-    getPlayerName() {
-        return new Promise((resolve) => {
-            process.stdout.write("\nEnter your name: ");
-
-            process.stdin.once("data", (data) => {
-                resolve(data.toString().trim());
-            });
-        });
-    }
-
-    getNextLevel() {
-        try {
-            const current = this.config?.level;
-            const num = parseInt(current.match(/\d+/)?.[0]);
-
-            if (!num) return null;
-
-            return `level${num + 1}.json`;
-
-        } catch {
-            return null;
+        safeScore() {
+            try {
+                return this.scoreSystem?.getScore?.() ?? 0;
+            } catch {
+                return 0;
+            }
         }
-    }
 
-    safeCall(fn) {
-        try {
-            return fn();
-        } catch (err) {
-            this.handleError("GAME_ERROR", err);
+        now() {
+            if (typeof performance !== "undefined" && typeof performance.now === "function") {
+                return performance.now();
+            }
+            return Date.now();
+        }
+
+        safeCall(fn) {
+            try {
+                return fn();
+            } catch (err) {
+                this.handleError("GAME_ERROR", err);
+                return null;
+            }
+        }
+
+        handleError(type, err) {
+            if (typeof console !== "undefined" && typeof console.error === "function") {
+                console.error(`[Engine ${type}]`, err?.message || err);
+            }
+        }
+
+        dispose() {
+            this.running = false;
+            this.ended = true;
+            this.stopSchedulers();
+            this.inputSystem = null;
+            this.game = null;
         }
     }
 
-    handleError(type, err) {
-        console.error(` [Engine ${type}]`, err.message);
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = GameEngine;
     }
-}
 
-module.exports = GameEngine;
+    globalScope.GameEngine = GameEngine;
+})(typeof window !== "undefined" ? window : globalThis);

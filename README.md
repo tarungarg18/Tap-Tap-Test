@@ -1,104 +1,101 @@
-# TaPTaP Game Engine
+# Tap-Tap Platform
 
-JSON-driven modular game engine.
+Tap-Tap is now a browser-first multi-game platform with:
+- JWT authentication (signup/login)
+- MongoDB user and score storage
+- JSON-driven game configs for every level
+- Flexible level editing via `flexible.json` per game
+- Per-user dashboard with max scores and recent runs
 
-## Features
+## Tech stack
+- Node.js + Express
+- MongoDB + Mongoose
+- JWT + bcryptjs
+- React (UMD + Babel pages)
 
-- JSON based configuration
-- Modular system architecture
-- Reusable game systems
-- Lightweight and extensible
-
+## Project structure
+```text
+Tap-Tap/
++-- engine/
+�   +-- core/engine.js
+�   +-- system/
+�       +-- scoresystem.js
+�       +-- timersystem.js
++-- server/
+�   +-- app.js
+�   +-- index.js
+�   +-- db/connect.js
+�   +-- middleware/auth.js
+�   +-- models/
+�   �   +-- User.js
+�   �   +-- ScoreEntry.js
+�   �   +-- GameStat.js
+�   +-- routes/
+�   �   +-- auth-api.js
+�   �   +-- dashboard-api.js
+�   �   +-- games-api.js
+�   +-- services/
+�   �   +-- auth-service.js
+�   �   +-- dashboard-service.js
+�   �   +-- game-service.js
+�   �   +-- leaderboard-service.js
+�   +-- utils/
+�       +-- errors.js
+�       +-- json-file.js
+�       +-- validators.js
++-- web/
+�   +-- login.html / login-app.jsx
+�   +-- signup.html / signup-app.jsx
+�   +-- home.html / home-app.jsx
+�   +-- dashboard.html / dashboard-app.jsx
+�   +-- styles.css
++-- game/
+�   +-- common/frontend/api.js
+�   +-- 2048/
+�   �   +-- game.js
+�   �   +-- level1.json ... level4.json
+�   �   +-- flexible.json
+�   �   +-- frontend/
+�   +-- Tap/
+�   �   +-- game.js
+�   �   +-- level1.json ... level4.json
+�   �   +-- flexible.json
+�   �   +-- frontend/
+�   +-- sudoku/
+�       +-- game.js
+�       +-- level1.json ... level4.json
+�       +-- flexible.json
+�       +-- frontend/
++-- .env.example
++-- package.json
++-- package-lock.json
 ```
-TAP-TAP ENGINE
-│
-├── config/
-│     └── game-config.json        (optional global config)
-│
-├── engine/
-│     ├── core/
-│     │     └── engine.js         (game loop + execution)
-│     │
-│     ├── system/
-│     │     ├── inputsystem.js    (captures user input)
-│     │     ├── leaderboard.js    (Update Leaderboard)
-│     │     ├── timersystem.js    (Handle Time)
-│     │     └── scoresystem.js    (optional / reusable)
-│     │
-│     └── utils/
-│           ├── apiclient.js    (Send LeaderBoard to Client)
-│           └── configloader.js   (loads JSON config)
-│
-├── game/
-│     ├── sudoku/
-│     │     ├── game.js           (sudoku logic)
-│     │     ├── level1.json
-│     │     ├── level2.json
-│     │     └── level3.json
-│     │
-│     └── Tap/
-│           ├── game.js           (tap game logic)
-│           ├── level1.json
-│           ├── level2.json
-│           └── level3.json
-│
-├── examples/
-│     └── demo.js
-│     └── sampleGame.js
-│     └── DEMO_RUN.ms
-│
-├── Prototype.md
-├── runner.js        (entry point)               
-├── README.md
-├── package.json
-└── .gitignore
-```
-## Game Engine Blueprint
-```
-                +----------------------+
-                |     Game JSON        |
-                | (Game Definition)    |
-                +----------+-----------+
-                           |
-                           v
-+------------------------------------------------+
-|                GAME ENGINE CORE                |
-|------------------------------------------------|
-| Game Loader                                    |
-| Game Renderer                                  |
-| Timer Manager                                  |
-| Score Manager                                  |
-| Input Handler                                  |
-| State Manager                                  |
-+------------+------------------+----------------+
-             |                  |
-             v                  v
 
-     +---------------+     +-----------------+
-     | Game Plugins  |     | Leaderboard API |
-     | Sudoku Game   |     | Submit Score    |
-     | Word Builder  |     | Fetch Rankings  |
-     +---------------+     +-----------------+
-
+## Setup
+1. Start MongoDB locally.
+2. Create `.env` from `.env.example`.
+3. Install deps:
+```bash
+npm install
 ```
-## UI Layout
+4. Start server:
+```bash
+npm run start
 ```
-----------------------------------
-| TapTap Game Engine             |
-----------------------------------
-| Game Selector                  |
-| [Sudoku] [Word Builder]        |
-----------------------------------
-| Timer        | Score           |
-----------------------------------
-|                                  |
-|        GAME BOARD                |
-|                                  |
-----------------------------------
-| Submit Score | Restart Game     |
-----------------------------------
-| Leaderboard                      |
-----------------------------------
-``
 
+## Main URLs
+- Login: `http://localhost:3000/login`
+- Signup: `http://localhost:3000/signup`
+- Home: `http://localhost:3000/home`
+- Dashboard: `http://localhost:3000/dashboard`
+- Games:
+  - `http://localhost:3000/games/2048`
+  - `http://localhost:3000/games/Tap`
+  - `http://localhost:3000/games/sudoku`
 
+## Behavior summary
+- Username and email are unique.
+- Score submission is automatic when a game ends.
+- Leaderboard shows top users by max score per game.
+- Dashboard shows each user's max score per game and recent score history.
+- `flexible.json` can be edited from Home and played instantly.

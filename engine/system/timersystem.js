@@ -1,48 +1,32 @@
 class TimerSystem {
     constructor(config) {
-        this.timeLimit = config?.timer?.limit || 60;
-        this.remaining = this.timeLimit;
-        this.interval = null;
-        this.engine = null;
+        this.reset(config);
     }
 
-    attachEngine(engine) {
-        this.engine = engine;
+    reset(config) {
+        const limitSeconds = Number(config?.timer?.limit);
+        this.timeLimit = Number.isFinite(limitSeconds) && limitSeconds > 0 ? limitSeconds : 60;
+        this.remainingMs = this.timeLimit * 1000;
     }
 
-    start() {
-        try {
-            console.log(` Time Limit: ${this.timeLimit}s`);
-
-            this.interval = setInterval(() => {
-                this.remaining--;
-
-                if (this.remaining <= 0) {
-                    console.log("\n Time's Up!");
-                    this.stop();
-
-                    if (this.engine && typeof this.engine.onGameEnd === "function") {
-                        this.engine.onGameEnd("TIME_UP");
-                    }
-                }
-
-            }, 1000);
-
-        } catch (err) {
-            console.error("[TimerSystem ERROR]", err.message);
-        }
+    update(deltaMs) {
+        if (!Number.isFinite(deltaMs) || deltaMs <= 0) return;
+        this.remainingMs = Math.max(0, this.remainingMs - deltaMs);
     }
 
-    stop() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
+    isExpired() {
+        return this.remainingMs <= 0;
     }
 
     getTime() {
-        return this.remaining;
+        return Math.ceil(this.remainingMs / 1000);
     }
 }
 
-module.exports = TimerSystem;
+if (typeof window !== "undefined") {
+    window.TimerSystem = TimerSystem;
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = TimerSystem;
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tap-Tap 2048</title>
+    <link rel="stylesheet" href="/game/2048/frontend/styles.css" />
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script src="/engine/system/scoresystem.js"></script>
+    <script src="/engine/system/timersystem.js"></script>
+    <script src="/engine/core/engine.js"></script>
+
+    <script src="/game/common/frontend/api.js"></script>
+    <script src="/game/2048/game.js"></script>
+
+    <script type="text/babel" data-presets="react" src="/game/2048/frontend/components/shared/Panel.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/2048/frontend/components/GameHeader.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/2048/frontend/components/GameStats.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/2048/frontend/components/GameBoard.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/2048/frontend/components/LeaderboardPanel.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/2048/frontend/app.jsx"></script>
+</body>
+</html>

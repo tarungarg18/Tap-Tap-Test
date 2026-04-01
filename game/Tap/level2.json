@@ -1,39 +1,33 @@
 {
-  "type": "tap",
-  "level": "level2.json",
-
-  "game": {
-    "title": "Tap Medium",
-    "fps": 12
-  },
-
-  "player": {
-    "startScore": 0
-  },
-
-  "rules": {
-    "TAP": 2,
-    "INVALID": -2,
-    "ERROR": -5,
-    "WIN": 20
-  },
-
-  "winCondition": {
-    "type": "TAP_COUNT",
-    "value": 20
-  },
-
-  "input": {
-    "key": "tap"
-  },
-
-  "messages": {
-    "invalid": "Wrong input!",
-    "correct": "Good!",
-    "win": "Level 2 Complete!"
-  },
-
-  "timer": {
-    "limit": 15
-  }
+    "type":  "tap",
+    "level":  "level2.json",
+    "game":  {
+                 "title":  "Tap Medium",
+                 "fps":  12
+             },
+    "player":  {
+                   "startScore":  0
+               },
+    "rules":  {
+                  "TAP":  2,
+                  "INVALID":  -2,
+                  "ERROR":  -5,
+                  "WIN":  20
+              },
+    "winCondition":  {
+                         "type":  "TAP_COUNT",
+                         "value":  20
+                     },
+    "input":  {
+                  "key":  "tap"
+              },
+    "messages":  {
+                     "invalid":  "Wrong input!",
+                     "correct":  "Good!",
+                     "win":  "Level 2 Complete!",
+                     "error":  "Game error"
+                 },
+    "timer":  {
+                  "limit":  15
+              }
 }

@@ -1,0 +1,50 @@
+{
+    "type":  "2048",
+    "level":  "flexible.json",
+    "game":  {
+                 "title":  "2048 Flexible",
+                 "fps":  10
+             },
+    "player":  {
+                   "startScore":  0
+               },
+    "rules":  {
+                  "MOVE":  0,
+                  "INVALID":  -2,
+                  "ERROR":  -10,
+                  "WIN":  50,
+                  "LOSE":  -25
+              },
+    "winCondition":  {
+                         "targetTile":  128
+                     },
+    "input":  {
+                  "help":  "w/a/s/d or up/down/left/right",
+                  "map":  {
+                              "w":  "up",
+                              "a":  "left",
+                              "s":  "down",
+                              "d":  "right",
+                              "up":  "up",
+                              "left":  "left",
+                              "down":  "down",
+                              "right":  "right"
+                          }
+              },
+    "messages":  {
+                     "invalid":  "Use w/a/s/d or up/down/left/right",
+                     "noMove":  "That move does not change the board",
+                     "move":  "Move accepted",
+                     "win":  "Great! You reached the level target",
+                     "lose":  "No moves left",
+                     "error":  "Something went wrong"
+                 },
+    "timer":  {
+                  "limit":  180
+              },
+    "gridSize":  4,
+    "gameplay":  {
+                     "startTiles":  2,
+                     "spawnFourChance":  0.1
+                 }
+}

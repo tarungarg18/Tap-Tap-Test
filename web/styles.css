@@ -1,0 +1,253 @@
+:root {
+    --bg: #f2f5fb;
+    --card: #ffffff;
+    --ink: #1e2a42;
+    --muted: #60708f;
+    --primary: #2d6cdf;
+    --primary-strong: #2357b6;
+    --success: #1f9d58;
+    --danger: #c93f3f;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: radial-gradient(circle at top, #fbfdff 0%, var(--bg) 65%);
+    color: var(--ink);
+    min-height: 100vh;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.page-wrap {
+    min-height: 100vh;
+    padding: 24px;
+    display: grid;
+    align-items: start;
+    justify-content: center;
+}
+
+.auth-layout {
+    width: min(460px, 100%);
+    margin-top: 48px;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 18px 34px rgba(40, 65, 120, 0.12);
+}
+
+h1, h2, h3 {
+    margin: 0;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.field {
+    display: grid;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+label {
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+input,
+select,
+textarea,
+button {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #cdd8ee;
+    padding: 10px 12px;
+    font-size: 0.96rem;
+    font-family: inherit;
+}
+
+textarea {
+    min-height: 160px;
+    resize: vertical;
+}
+
+button {
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 120ms ease, background-color 120ms ease;
+}
+
+button:hover {
+    background: var(--primary-strong);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button.secondary {
+    background: #d7e0f3;
+    color: #233358;
+}
+
+button.success {
+    background: var(--success);
+}
+
+button.danger {
+    background: var(--danger);
+}
+
+button:disabled {
+    opacity: 0.65;
+    cursor: default;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.row > * {
+    flex: 1;
+}
+
+.error {
+    margin-top: 12px;
+    color: var(--danger);
+    font-size: 0.92rem;
+}
+
+.success-text {
+    margin-top: 12px;
+    color: var(--success);
+    font-size: 0.92rem;
+}
+
+.topbar {
+    width: min(1100px, 100%);
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.topbar .brand {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.topbar .actions {
+    display: flex;
+    gap: 8px;
+}
+
+.dashboard-grid {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(360px, 2fr);
+    gap: 16px;
+}
+
+.home-grid {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 1.1fr) minmax(360px, 1.9fr);
+    gap: 16px;
+}
+
+.list {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.list-item {
+    background: #f4f7ff;
+    border-radius: 10px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.kpi-grid {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.kpi {
+    background: #f4f7ff;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+}
+
+.kpi .label {
+    color: var(--muted);
+    font-size: 0.8rem;
+}
+
+.kpi .value {
+    margin-top: 5px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.game-card {
+    background: #f7f9ff;
+    border: 1px solid #e2e9fa;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.game-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(45, 89, 180, 0.12);
+}
+
+@media (max-width: 980px) {
+    .home-grid,
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-wrap {
+        padding: 14px;
+    }
+
+    .auth-layout {
+        margin-top: 20px;
+    }
+}

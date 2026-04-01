@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sudoku Game</title>
+    <link rel="stylesheet" href="/game/sudoku/frontend/styles.css" />
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script src="/engine/system/scoresystem.js"></script>
+    <script src="/engine/system/timersystem.js"></script>
+    <script src="/engine/core/engine.js"></script>
+
+    <script src="/game/common/frontend/api.js"></script>
+    <script src="/game/sudoku/game.js"></script>
+    <script type="text/babel" data-presets="react" src="/game/sudoku/frontend/app.jsx"></script>
+</body>
+</html>

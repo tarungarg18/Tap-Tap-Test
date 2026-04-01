@@ -1,99 +1,122 @@
 class TapGame {
     constructor(config) {
+        if (!config || typeof config !== "object") {
+            throw new Error("TapGame requires config");
+        }
+
         this.config = config;
+        this.inputConfig = this.config.input;
+        this.messages = this.config.messages;
+        this.rules = this.config.rules;
+        this.winCondition = this.config.winCondition;
+
+        if (!this.inputConfig || typeof this.inputConfig.key !== "string") {
+            throw new Error("TapGame requires input.key in config");
+        }
 
         this.current = 0;
-
-        this.inputConfig = config.input;
-        this.messages = config.messages;
-
-        this.score = config.player?.startScore || 0;
-        this.rules = config.rules || {};
-
-        this.winCondition = config.winCondition || {};
-
+        this.runtimeScore = Number(this.config.player?.startScore || 0);
         this.needsRender = true;
         this.gameOver = false;
     }
 
     init() {
-        console.log(` ${this.config?.game?.title}`);
+        if (typeof window === "undefined") {
+            console.log(` ${this.config.game.title}`);
+        }
     }
 
     handleInput(input) {
         try {
-            if (typeof input !== "string") {
-                this.applyRule("INVALID");
+            if (typeof input !== "string" || input.trim() !== this.inputConfig.key) {
+                const invalidDelta = this.ruleValue("INVALID");
+                this.runtimeScore += invalidDelta;
+
                 return {
                     type: "INVALID",
-                    message: this.messages?.invalid
+                    message: this.messages.invalid
                 };
             }
 
-            const expected = this.inputConfig.key;
-
-            if (input !== expected) {
-                this.applyRule("INVALID");
-                return {
-                    type: "INVALID",
-                    message: this.messages?.invalid
-                };
-            }
-
-            this.current++;
-            this.applyRule("TAP");
+            this.current += 1;
+            const tapDelta = this.ruleValue("TAP");
+            this.runtimeScore += tapDelta;
 
             if (this.checkWin()) {
                 this.gameOver = true;
-                this.applyRule("WIN");
+                const winDelta = this.ruleValue("WIN");
+                this.runtimeScore += winDelta;
 
                 return {
                     type: "WIN",
-                    message: this.messages?.win
+                    message: this.messages.win,
+                    scoreDelta: tapDelta
                 };
             }
 
             return {
                 type: "TAP",
-                message: this.messages?.correct
+                message: this.messages.correct
             };
+        } catch {
+            const errorDelta = this.ruleValue("ERROR");
+            this.runtimeScore += errorDelta;
 
-        } catch (err) {
-            this.applyRule("ERROR");
             return {
                 type: "ERROR",
-                message: "Something went wrong"
+                message: this.messages.error
             };
-        }
-    }
-
-    applyRule(type) {
-        if (this.rules && this.rules[type] !== undefined) {
-            this.score += this.rules[type];
-        }
-    }
-
-    checkWin() {
-        if (!this.winCondition) return false;
-
-        switch (this.winCondition.type) {
-            case "TAP_COUNT":
-                return this.current >= this.winCondition.value;
-
-            case "SCORE":
-                return this.score >= this.winCondition.value;
-
-            default:
-                return false;
         }
     }
 
     update() {}
 
     render() {
-        console.log(`Score: ${this.score}`);
-        console.log(`Input: ${this.inputConfig.key}`);
+        const state = this.getState();
+
+        if (typeof window === "undefined") {
+            console.log(`Score: ${this.runtimeScore}`);
+            console.log(`Input: ${this.inputConfig.key}`);
+        }
+
+        return state;
+    }
+
+    getState() {
+        return {
+            title: this.config.game.title,
+            current: this.current,
+            score: this.runtimeScore,
+            input: this.inputConfig.key,
+            winCondition: this.winCondition,
+            gameOver: this.gameOver
+        };
+    }
+
+    checkWin() {
+        if (!this.winCondition || !this.winCondition.type) return false;
+
+        if (this.winCondition.type === "TAP_COUNT") {
+            return this.current >= this.winCondition.value;
+        }
+
+        if (this.winCondition.type === "SCORE") {
+            return this.runtimeScore >= this.winCondition.value;
+        }
+
+        return false;
+    }
+
+    ruleValue(ruleType) {
+        const value = this.rules?.[ruleType];
+        return typeof value === "number" ? value : 0;
     }
 }
 
-module.exports = TapGame;
+if (typeof window !== "undefined") {
+    window.TapGame = TapGame;
+}
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = TapGame;
+}

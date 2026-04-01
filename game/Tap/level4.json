@@ -1,39 +1,33 @@
 {
-  "type": "tap",
-  "level": "level4.json",
-
-  "game": {
-    "title": "Tap Extreme",
-    "fps": 18
-  },
-
-  "player": {
-    "startScore": 10
-  },
-
-  "rules": {
-    "TAP": 4,
-    "INVALID": -5,
-    "ERROR": -10,
-    "WIN": 50
-  },
-
-  "winCondition": {
-    "type": "SCORE",
-    "value": 100
-  },
-
-  "input": {
-    "key": "tap"
-  },
-
-  "messages": {
-    "invalid": "Mistake!",
-    "correct": "Perfect!",
-    "win": "You conquered Tap Extreme!"
-  },
-
-  "timer": {
-    "limit": 10
-  }
+    "type":  "tap",
+    "level":  "level4.json",
+    "game":  {
+                 "title":  "Tap Extreme",
+                 "fps":  18
+             },
+    "player":  {
+                   "startScore":  10
+               },
+    "rules":  {
+                  "TAP":  4,
+                  "INVALID":  -5,
+                  "ERROR":  -10,
+                  "WIN":  50
+              },
+    "winCondition":  {
+                         "type":  "SCORE",
+                         "value":  100
+                     },
+    "input":  {
+                  "key":  "tap"
+              },
+    "messages":  {
+                     "invalid":  "Mistake!",
+                     "correct":  "Perfect!",
+                     "win":  "You conquered Tap Extreme!",
+                     "error":  "Game error"
+                 },
+    "timer":  {
+                  "limit":  10
+              }
 }

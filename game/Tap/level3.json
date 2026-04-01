@@ -1,39 +1,33 @@
 {
-  "type": "tap",
-  "level": "level3.json",
-
-  "game": {
-    "title": "Tap Hard",
-    "fps": 15
-  },
-
-  "player": {
-    "startScore": 0
-  },
-
-  "rules": {
-    "TAP": 3,
-    "INVALID": -3,
-    "ERROR": -7,
-    "WIN": 30
-  },
-
-  "winCondition": {
-    "type": "SCORE",
-    "value": 50
-  },
-
-  "input": {
-    "key": "tap"
-  },
-
-  "messages": {
-    "invalid": "Careful!",
-    "correct": "Nice!",
-    "win": "Level 3 Mastered!"
-  },
-
-  "timer": {
-    "limit": 12
-  }
+    "type":  "tap",
+    "level":  "level3.json",
+    "game":  {
+                 "title":  "Tap Hard",
+                 "fps":  15
+             },
+    "player":  {
+                   "startScore":  0
+               },
+    "rules":  {
+                  "TAP":  3,
+                  "INVALID":  -3,
+                  "ERROR":  -7,
+                  "WIN":  30
+              },
+    "winCondition":  {
+                         "type":  "SCORE",
+                         "value":  50
+                     },
+    "input":  {
+                  "key":  "tap"
+              },
+    "messages":  {
+                     "invalid":  "Careful!",
+                     "correct":  "Nice!",
+                     "win":  "Level 3 Mastered!",
+                     "error":  "Game error"
+                 },
+    "timer":  {
+                  "limit":  12
+              }
 }

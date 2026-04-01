@@ -1,68 +1,240 @@
 {
-  "type": "sudoku",
-  "level": "level3.json",
-
-  "game": {
-    "title": "Sudoku Hard",
-    "fps": 10
-  },
-
-  "player": {
-    "startScore": 0
-  },
-
-  "rules": {
-    "MOVE": 20,
-    "INVALID": -10,
-    "ERROR": -15,
-    "WIN": 200
-  },
-
-  "input": {
-    "format": "r,c,v",
-    "separator": ",",
-    "expectedLength": 3
-  },
-
-  "validation": {
-    "allowOverwrite": false
-  },
-
-  "messages": {
-    "invalidFormat": "Use format r,c,v",
-    "invalidCell": "Out of bounds",
-    "filled": "Already filled",
-    "wrong": "Wrong value",
-    "correct": "Correct move"
-  },
-
-  "timer": {
-    "limit": 180
-  },
-
-  "gridSize": 9,
-
-  "board": [
-    [0,0,0,0,0,0,0,1,2],
-    [0,0,0,0,0,0,0,3,0],
-    [0,0,1,0,9,5,0,0,0],
-    [0,0,0,0,0,0,0,0,0],
-    [5,0,0,1,0,2,0,0,6],
-    [0,0,0,0,0,0,0,0,0],
-    [0,0,0,5,7,0,4,0,0],
-    [0,3,0,0,0,0,0,0,0],
-    [1,2,0,0,0,0,0,0,0]
-  ],
-
-  "solution": [
-    [9,5,3,6,8,7,4,1,2],
-    [6,7,2,4,1,9,8,3,5],
-    [8,4,1,2,9,5,6,7,3],
-    [3,6,7,9,5,8,1,2,4],
-    [5,9,8,1,3,2,7,4,6],
-    [2,1,4,7,6,3,9,5,8],
-    [4,8,9,5,7,1,2,6,3],
-    [7,3,6,8,2,4,5,9,1],
-    [1,2,5,3,4,6,0,8,7]
-  ]
+    "type":  "sudoku",
+    "level":  "level3.json",
+    "game":  {
+                 "title":  "Sudoku Hard",
+                 "fps":  10
+             },
+    "player":  {
+                   "startScore":  0
+               },
+    "rules":  {
+                  "MOVE":  20,
+                  "INVALID":  -10,
+                  "ERROR":  -15,
+                  "WIN":  200
+              },
+    "input":  {
+                  "format":  "r,c,v",
+                  "separator":  ",",
+                  "expectedLength":  3
+              },
+    "validation":  {
+                       "allowOverwrite":  false
+                   },
+    "messages":  {
+                     "invalidFormat":  "Use format r,c,v",
+                     "invalidCell":  "Out of bounds",
+                     "filled":  "Already filled",
+                     "wrong":  "Wrong value",
+                     "correct":  "Correct move",
+                     "error":  "Game error",
+                     "win":  "Puzzle solved"
+                 },
+    "timer":  {
+                  "limit":  180
+              },
+    "gridSize":  9,
+    "board":  [
+                  [
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      2
+                  ],
+                  [
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      3,
+                      0
+                  ],
+                  [
+                      0,
+                      0,
+                      1,
+                      0,
+                      9,
+                      5,
+                      0,
+                      0,
+                      0
+                  ],
+                  [
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+                  [
+                      5,
+                      0,
+                      0,
+                      1,
+                      0,
+                      2,
+                      0,
+                      0,
+                      6
+                  ],
+                  [
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+                  [
+                      0,
+                      0,
+                      0,
+                      5,
+                      7,
+                      0,
+                      4,
+                      0,
+                      0
+                  ],
+                  [
+                      0,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0
+                  ],
+                  [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0
+                  ]
+              ],
+    "solution":  [
+                     [
+                         9,
+                         5,
+                         3,
+                         6,
+                         8,
+                         7,
+                         4,
+                         1,
+                         2
+                     ],
+                     [
+                         6,
+                         7,
+                         2,
+                         4,
+                         1,
+                         9,
+                         8,
+                         3,
+                         5
+                     ],
+                     [
+                         8,
+                         4,
+                         1,
+                         2,
+                         9,
+                         5,
+                         6,
+                         7,
+                         3
+                     ],
+                     [
+                         3,
+                         6,
+                         7,
+                         9,
+                         5,
+                         8,
+                         1,
+                         2,
+                         4
+                     ],
+                     [
+                         5,
+                         9,
+                         8,
+                         1,
+                         3,
+                         2,
+                         7,
+                         4,
+                         6
+                     ],
+                     [
+                         2,
+                         1,
+                         4,
+                         7,
+                         6,
+                         3,
+                         9,
+                         5,
+                         8
+                     ],
+                     [
+                         4,
+                         8,
+                         9,
+                         5,
+                         7,
+                         1,
+                         2,
+                         6,
+                         3
+                     ],
+                     [
+                         7,
+                         3,
+                         6,
+                         8,
+                         2,
+                         4,
+                         5,
+                         9,
+                         1
+                     ],
+                     [
+                         1,
+                         2,
+                         5,
+                         3,
+                         4,
+                         6,
+                         0,
+                         8,
+                         7
+                     ]
+                 ]
 }

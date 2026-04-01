@@ -1,0 +1,33 @@
+{
+    "type":  "tap",
+    "level":  "flexible.json",
+    "game":  {
+                 "title":  "Tap Flexible",
+                 "fps":  10
+             },
+    "player":  {
+                   "startScore":  0
+               },
+    "rules":  {
+                  "TAP":  2,
+                  "INVALID":  -1,
+                  "ERROR":  -5,
+                  "WIN":  10
+              },
+    "winCondition":  {
+                         "type":  "TAP_COUNT",
+                         "value":  10
+                     },
+    "input":  {
+                  "key":  "tap"
+              },
+    "messages":  {
+                     "invalid":  "Type \u0027tap\u0027 only",
+                     "correct":  "Nice tap!",
+                     "win":  "You reached the target!",
+                     "error":  "Game error"
+                 },
+    "timer":  {
+                  "limit":  20
+              }
+}
