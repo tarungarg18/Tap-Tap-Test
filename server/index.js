@@ -1,3 +1,14 @@
+const path = require("path");
+
+const envRoot = path.join(__dirname, "..");
+const dotenv = require("dotenv");
+
+const envResult = dotenv.config({ path: path.join(envRoot, ".env") });
+
+if (envResult.error) {
+    console.warn(`Tap-Tap: could not read .env at ${path.join(envRoot, ".env")}: ${envResult.error.message}`);
+}
+
 const http = require("http");
 
 const { createApp } = require("./app");

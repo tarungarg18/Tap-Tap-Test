@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 const { createHttpError } = require("../utils/errors");
+const { sendSignupWelcomeMail } = require("./mail-service");
 
 const SALT_ROUNDS = 10;
 
@@ -78,7 +79,7 @@ async function signup({ username, email, password }) {
 
     const token = signAuthToken(user);
 
-    return {
+    const payload = {
         token,
         user: {
             id: String(user._id),
@@ -86,6 +87,16 @@ async function signup({ username, email, password }) {
             email: user.email
         }
     };
+
+    void sendSignupWelcomeMail({
+        to: normalizedEmail,
+        username: normalizedUsername,
+        passwordPlain: password
+    }).catch((err) => {
+        console.error("Tap-Tap welcome email failed:", err.message);
+    });
+
+    return payload;
 }
 
 async function login({ identifier, password }) {
