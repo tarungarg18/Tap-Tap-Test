@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ludo — Local 4 players</title>
+    <link rel="stylesheet" href="/game/ludo/frontend/styles.css" />
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script src="/game/ludo/game.js"></script>
+
+    <script type="text/babel" data-presets="react" src="/game/ludo/frontend/components/shared/DiceFace.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/ludo/frontend/components/shared/TopBar.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/ludo/frontend/components/shared/GameHeader.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/ludo/frontend/components/board/LudoBoard.jsx"></script>
+    <script type="text/babel" data-presets="react" src="/game/ludo/frontend/app.jsx"></script>
+</body>
+</html>

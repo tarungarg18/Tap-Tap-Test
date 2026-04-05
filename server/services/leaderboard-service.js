@@ -1,5 +1,6 @@
 const GameStat = require("../models/GameStat");
 const ScoreEntry = require("../models/ScoreEntry");
+const { listGames } = require("./game-service");
 const { createHttpError } = require("../utils/errors");
 const { isSafeName } = require("../utils/validators");
 
@@ -66,6 +67,14 @@ async function getLeaderboard(gameName, limit = 10) {
     }));
 }
 
+async function getAllLeaderboards(limit = 10) {
+    const games = listGames();
+    const entries = await Promise.all(
+        games.map(async ({ name }) => [name, await getLeaderboard(name, limit)])
+    );
+    return Object.fromEntries(entries);
+}
+
 async function addLeaderboardEntry(gameName, payload, userId) {
     assertGameName(gameName);
 
@@ -75,6 +84,14 @@ async function addLeaderboardEntry(gameName, payload, userId) {
 
     const normalizedGame = normalizeGameName(gameName);
     const { score, reason, level } = normalizeScorePayload(payload || {});
+
+    const existing = await GameStat.findOne({ user: userId, gameName: normalizedGame }).lean();
+    const currentBest = existing ? existing.maxScore : null;
+
+    if (currentBest !== null && score <= currentBest) {
+        const leaderboard = await getLeaderboard(normalizedGame, 10);
+        return { success: true, improved: false, leaderboard };
+    }
 
     await ScoreEntry.create({
         user: userId,
@@ -87,8 +104,7 @@ async function addLeaderboardEntry(gameName, payload, userId) {
     await GameStat.findOneAndUpdate(
         { user: userId, gameName: normalizedGame },
         {
-            $max: { maxScore: score },
-            $set: { gameName: normalizedGame, user: userId }
+            $set: { maxScore: score, gameName: normalizedGame, user: userId }
         },
         {
             new: true,
@@ -97,10 +113,12 @@ async function addLeaderboardEntry(gameName, payload, userId) {
         }
     );
 
-    return getLeaderboard(normalizedGame, 10);
+    const leaderboard = await getLeaderboard(normalizedGame, 10);
+    return { success: true, improved: true, leaderboard };
 }
 
 module.exports = {
     getLeaderboard,
+    getAllLeaderboards,
     addLeaderboardEntry
 };

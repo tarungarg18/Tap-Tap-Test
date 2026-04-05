@@ -3,11 +3,19 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 const { createHttpError } = require("../utils/errors");
+const { sendSignupWelcomeMail } = require("./mail-service");
 
 const SALT_ROUNDS = 10;
 
 function getJwtSecret() {
-    return process.env.JWT_SECRET || "tap_tap_dev_secret_change_me";
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        if (process.env.NODE_ENV === "production") {
+            throw new Error("JWT_SECRET environment variable is required in production");
+        }
+        return "tap_tap_dev_secret_change_me";
+    }
+    return secret;
 }
 
 function isValidEmail(email) {
@@ -71,7 +79,7 @@ async function signup({ username, email, password }) {
 
     const token = signAuthToken(user);
 
-    return {
+    const payload = {
         token,
         user: {
             id: String(user._id),
@@ -79,6 +87,16 @@ async function signup({ username, email, password }) {
             email: user.email
         }
     };
+
+    void sendSignupWelcomeMail({
+        to: normalizedEmail,
+        username: normalizedUsername,
+        passwordPlain: password
+    }).catch((err) => {
+        console.error("Tap-Tap welcome email failed:", err.message);
+    });
+
+    return payload;
 }
 
 async function login({ identifier, password }) {
@@ -90,7 +108,7 @@ async function login({ identifier, password }) {
 
     const user = await User.findOne({
         $or: [{ username: normalizedIdentifier }, { email: normalizedIdentifier }]
-    });
+    }).select("+passwordHash");
 
     if (!user) {
         throw createHttpError(401, "Invalid credentials");

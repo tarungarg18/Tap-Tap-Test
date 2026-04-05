@@ -3,6 +3,7 @@ const path = require("path");
 
 const gamesApiRouter = require("./routes/games-api");
 const authApiRouter = require("./routes/auth-api");
+const mailApiRouter = require("./routes/mail-api");
 const dashboardApiRouter = require("./routes/dashboard-api");
 const { getFrontendIndexPath } = require("./services/game-service");
 
@@ -39,6 +40,7 @@ function createApp() {
     });
 
     app.use("/api/auth", authApiRouter);
+    app.use("/api/mail", mailApiRouter);
     app.use("/api/dashboard", dashboardApiRouter);
     app.use("/api/games", gamesApiRouter);
 
