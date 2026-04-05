@@ -38,6 +38,9 @@ function App() {
     const [statusText, setStatusText] = useState("Fill puzzle using row, col, value");
     const [errorText, setErrorText] = useState("");
     const [loading, setLoading] = useState(false);
+    const [gridSizerOpen, setGridSizerOpen] = useState(false);
+    const [cellSizeInput, setCellSizeInput] = useState("40");
+    const [cellSize, setCellSize] = useState(40);
 
     const [form, setForm] = useState({ r: "", c: "", v: "" });
 
@@ -56,6 +59,13 @@ function App() {
             setErrorText(err.message || "Failed to load leaderboard");
         }
     }, [api]);
+
+    function renderLeaderboardStars(score) {
+        const starCount = Math.min(5, Math.max(1, Math.round((score || 0) / 700)));
+        return Array.from({ length: starCount }, (_, index) => (
+            <span key={index} className="leaderboard-star">★</span>
+        ));
+    }
 
     async function autoSubmit(levelFile, finalSnapshot) {
         if (submitLockRef.current) return;
@@ -172,6 +182,19 @@ function App() {
         engineRef.current.receiveInput(raw);
     }
 
+    function applyGridSize(event) {
+        event?.preventDefault?.();
+        const next = Number(cellSizeInput);
+        if (!Number.isFinite(next) || next < 24 || next > 72) {
+            setErrorText("Grid cell size must be between 24 and 72.");
+            return;
+        }
+
+        setErrorText("");
+        setCellSize(next);
+        setGridSizerOpen(false);
+    }
+
     const board = snapshot.gameState?.board || emptyBoard();
 
     function logout() {
@@ -193,11 +216,19 @@ function App() {
             <section className="card">
                 <div className="top">
                     <h1>{snapshot.gameState?.title || "Sudoku"}</h1>
-                    <div>
+                    <div className="top-actions">
                         <select value={selectedLevel} onChange={(e) => setSelectedLevel(e.target.value)} disabled={loading}>
                             {levels.map((item) => <option key={item} value={item}>{item}</option>)}
                         </select>
                         <button style={{ marginLeft: "8px" }} onClick={() => startLevel(selectedLevel)} disabled={loading}>Restart</button>
+                        <button
+                            type="button"
+                            className="icon-grid-button"
+                            title="Custom grid size"
+                            onClick={() => setGridSizerOpen((value) => !value)}
+                        >
+                            <span className="grid-icon" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </div>
 
@@ -210,8 +241,27 @@ function App() {
                 <div className="status">{statusText}</div>
                 {errorText ? <div className="status error">{errorText}</div> : null}
 
+                {gridSizerOpen ? (
+                    <form className="grid-size-panel" onSubmit={applyGridSize}>
+                        <label htmlFor="grid-size-input">Custom grid size</label>
+                        <div className="grid-size-row">
+                            <input
+                                id="grid-size-input"
+                                type="number"
+                                min="24"
+                                max="72"
+                                value={cellSizeInput}
+                                onChange={(e) => setCellSizeInput(e.target.value)}
+                                placeholder="Cell px"
+                            />
+                            <button type="submit">Apply</button>
+                        </div>
+                        <div className="hint">Set cell size from 24 to 72 pixels.</div>
+                    </form>
+                ) : null}
+
                 <div className="board-wrap">
-                    <table className="board">
+                    <table className="board" style={{ "--cell-size": `${cellSize}px` }}>
                         <tbody>
                             {board.map((row, rIdx) => (
                                 <tr key={rIdx}>
@@ -240,14 +290,22 @@ function App() {
                 <div className="hint">Input format from JSON: {snapshot.gameState?.inputFormat}</div>
             </section>
 
-            <section className="card">
+            <section className="card leaderboard-panel">
                 <h2>Leaderboard</h2>
                 <ol className="leaderboard-list">
                     {leaderboard.map((entry, index) => (
                         <li key={`${entry.username}-${entry.updatedAt}-${index}`} className="leaderboard-item">
-                            <span>{index + 1}</span>
-                            <span>{entry.username}</span>
-                            <strong>{entry.score}</strong>
+                            <div className={`leaderboard-rank rank-${Math.min(index + 1, 4)}`}>
+                                {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                            </div>
+                            <div className="leaderboard-player">
+                                <div className="leaderboard-avatar">{entry.username?.charAt(0)?.toUpperCase() || "?"}</div>
+                                <div className="leaderboard-player-info">
+                                    <div className="player-name">{entry.username}</div>
+                                    <div className="player-stars">{renderLeaderboardStars(entry.score)}</div>
+                                </div>
+                            </div>
+                            <div className="leaderboard-score">{entry.score}</div>
                         </li>
                     ))}
                 </ol>

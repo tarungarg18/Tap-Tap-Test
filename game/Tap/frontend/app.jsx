@@ -51,6 +51,13 @@ function App() {
         }
     }, [api]);
 
+    function renderLeaderboardStars(score) {
+        const starCount = Math.min(5, Math.max(1, Math.round((score || 0) / 700)));
+        return Array.from({ length: starCount }, (_, index) => (
+            <span key={index} className="leaderboard-star">★</span>
+        ));
+    }
+
     async function autoSubmit(levelFile, finalSnapshot) {
         if (submitLockRef.current) return;
         submitLockRef.current = true;
@@ -217,14 +224,22 @@ function App() {
                 </div>
             </section>
 
-            <section className="card">
+            <section className="card leaderboard-panel">
                 <h2>Leaderboard</h2>
                 <ol className="leaderboard-list">
                     {leaderboard.map((entry, index) => (
                         <li key={`${entry.username}-${entry.updatedAt}-${index}`} className="leaderboard-item">
-                            <span>{index + 1}</span>
-                            <span>{entry.username}</span>
-                            <strong>{entry.score}</strong>
+                            <div className={`leaderboard-rank rank-${Math.min(index + 1, 4)}`}>
+                                {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                            </div>
+                            <div className="leaderboard-player">
+                                <div className="leaderboard-avatar">{entry.username?.charAt(0)?.toUpperCase() || "?"}</div>
+                                <div className="leaderboard-player-info">
+                                    <div className="player-name">{entry.username}</div>
+                                    <div className="player-stars">{renderLeaderboardStars(entry.score)}</div>
+                                </div>
+                            </div>
+                            <div className="leaderboard-score">{entry.score}</div>
                         </li>
                     ))}
                 </ol>

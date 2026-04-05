@@ -4,15 +4,30 @@
     ns.LeaderboardPanel = function LeaderboardPanel({ leaderboard }) {
         const Panel = ns.Panel;
 
+        function renderStars(score) {
+            const starCount = Math.min(5, Math.max(1, Math.round((score || 0) / 700)));
+            return Array.from({ length: starCount }, (_, index) => (
+                <span key={index} className="leaderboard-star">★</span>
+            ));
+        }
+
         return (
             <Panel className="leaderboard">
                 <h2>Leaderboard</h2>
                 <ol className="leaderboard-list">
                     {leaderboard.map((entry, index) => (
                         <li key={`${entry.username}-${entry.updatedAt}-${index}`} className="leaderboard-item">
-                            <span className="rank">{index + 1}</span>
-                            <span className="player">{entry.username}</span>
-                            <span className="score">{entry.score}</span>
+                            <div className={`leaderboard-rank rank-${Math.min(index + 1, 4)}`}>
+                                {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                            </div>
+                            <div className="leaderboard-player">
+                                <div className="leaderboard-avatar">{entry.username?.charAt(0)?.toUpperCase() || "?"}</div>
+                                <div className="leaderboard-player-info">
+                                    <div className="player-name">{entry.username}</div>
+                                    <div className="player-stars">{renderStars(entry.score)}</div>
+                                </div>
+                            </div>
+                            <div className="leaderboard-score">{entry.score}</div>
                         </li>
                     ))}
                 </ol>

@@ -1,11 +1,17 @@
 const { useEffect, useMemo, useState } = React;
 
+function getStoredTheme() {
+    return localStorage.getItem("tapTapTheme") || "light";
+}
+
 function DashboardPage() {
     const api = window.TapTapApi;
-
     const [user, setUser] = useState(api.getUser());
     const [stats, setStats] = useState([]);
     const [recentScores, setRecentScores] = useState([]);
+    const [theme, setTheme] = useState(getStoredTheme);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [searchText, setSearchText] = useState("");
     const [error, setError] = useState("");
 
     const totals = useMemo(() => {
@@ -14,6 +20,12 @@ function DashboardPage() {
         const totalRuns = recentScores.length;
         return { totalGames, bestScore, totalRuns };
     }, [stats, recentScores]);
+
+    useEffect(() => {
+        document.body.classList.remove("theme-light", "theme-dark");
+        document.body.classList.add(`theme-${theme}`);
+        localStorage.setItem("tapTapTheme", theme);
+    }, [theme]);
 
     useEffect(() => {
         if (!api.requireAuth("/login")) return;
@@ -37,22 +49,146 @@ function DashboardPage() {
         window.location.href = "/login";
     }
 
+    function scrollToFooter() {
+        document.getElementById("site-footer")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function runSearch(event) {
+        event.preventDefault();
+        const query = searchText.trim().toLowerCase();
+        if (!query) return;
+
+        if (query.includes("home") || query.includes("tap") || query.includes("sudoku") || query.includes("2048")) {
+            window.location.href = "/home";
+            return;
+        }
+
+        if (query.includes("about") || query.includes("footer") || query.includes("contact")) {
+            scrollToFooter();
+            return;
+        }
+
+        if (query.includes("login")) {
+            window.location.href = "/login";
+            return;
+        }
+
+        if (query.includes("signup") || query.includes("create")) {
+            window.location.href = "/signup";
+        }
+    }
+
     return (
         <div className="page-wrap">
-            <div className="topbar">
-                <div className="brand">Player Dashboard</div>
-                <div className="actions">
-                    <button className="secondary" onClick={() => (window.location.href = "/home")}>Home</button>
-                    <button className="danger" onClick={logout}>Logout</button>
+            <nav className="navbar">
+                <div className="navbar-brand">
+                    <div className="navbar-game-brand">
+                        <div className="navbar-game-brand-line">Tap Tap</div>
+                        <div className="navbar-game-brand-line">games</div>
+                    </div>
                 </div>
-            </div>
+
+                <div className="navbar-center">
+                    <button
+                        className="nav-pill"
+                        type="button"
+                        onClick={() => (window.location.href = "/home")}
+                    >
+                        Home
+                    </button>
+                    <button className="nav-pill active" type="button">Dashboard</button>
+                    <button className="nav-pill" type="button" onClick={scrollToFooter}>About</button>
+                </div>
+
+                <div className="navbar-actions">
+                    <form className="navbar-search-trigger" onSubmit={runSearch}>
+                        <span className="search-icon navbar-search-icon"></span>
+                        <input
+                            className="navbar-search-input"
+                            type="text"
+                            value={searchText}
+                            onChange={(event) => setSearchText(event.target.value)}
+                            placeholder="Search"
+                            aria-label="Search pages"
+                        />
+                    </form>
+                    <button
+                        className="theme-toggle icon-toggle"
+                        type="button"
+                        aria-label={theme === "light" ? "Enable dark mode" : "Enable light mode"}
+                        onClick={() => setTheme((current) => current === "light" ? "dark" : "light")}
+                    >
+                        <span className={`theme-icon ${theme === "light" ? "theme-icon-moon" : "theme-icon-sun"}`}></span>
+                    </button>
+
+                    <div className="nav-menu-wrap">
+                        <button
+                            className="profile-toggle"
+                            type="button"
+                            aria-label="Open account menu"
+                            onClick={() => setMenuOpen((value) => !value)}
+                        >
+                            <span className="profile-icon-head"></span>
+                            <span className="profile-icon-body"></span>
+                        </button>
+
+                        {menuOpen ? (
+                            <div className="profile-card">
+                                <div className="profile-card-top">
+                                    <div className="profile-card-avatar-wrap">
+                                        <div className="profile-card-avatar">
+                                            {(user?.username || "Tap Tap").slice(0, 2).toUpperCase()}
+                                        </div>
+                                        <div className="profile-card-progress">75%</div>
+                                    </div>
+                                    <div className="profile-card-top-actions">
+                                        <button
+                                            className="profile-card-edit"
+                                            type="button"
+                                            onClick={() => (window.location.href = "/dashboard")}
+                                        >
+                                            Edit Profile
+                                        </button>
+                                        <button
+                                            className="profile-card-next"
+                                            type="button"
+                                            onClick={() => (window.location.href = "/dashboard")}
+                                            aria-label="Open profile page"
+                                        >
+                                            <span className="profile-card-next-icon"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="profile-card-name">{user?.username || "Tap Tap Player"}</div>
+                                <div className="profile-card-email">{user?.email || "Create an account to save your progress"}</div>
+
+                                <div className="profile-card-stats">
+                                    <div className="profile-card-stat">
+                                        <span className="profile-card-stat-icon trophy"></span>
+                                        <span>Your Global Rank</span>
+                                        <strong>NA</strong>
+                                    </div>
+                                    <div className="profile-card-stat">
+                                        <span className="profile-card-stat-icon star"></span>
+                                        <span>Your Points</span>
+                                        <strong>0</strong>
+                                    </div>
+                                </div>
+
+                                <button className="profile-card-link danger" type="button" onClick={logout}>Logout</button>
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            </nav>
 
             <div className="dashboard-grid">
-                <section className="card">
+                <section className="card dashboard-profile-card">
                     <h2>{user?.username || "Player"}</h2>
-                    <div className="muted" style={{ marginTop: "6px" }}>{user?.email || ""}</div>
+                    <div className="muted dashboard-email">{user?.email || ""}</div>
 
-                    <div className="kpi-grid">
+                    <div className="kpi-grid dashboard-kpis">
                         <div className="kpi">
                             <div className="label">Games Played</div>
                             <div className="value">{totals.totalGames}</div>
@@ -82,9 +218,12 @@ function DashboardPage() {
                     </div>
                 </section>
 
-                <section className="card">
-                    <h2>Recent Scores</h2>
-                    <ol className="list">
+                <section className="card dashboard-recent-card">
+                    <div className="section-heading-row">
+                        <h2>Recent Scores</h2>
+                        <span className="recent-score-badge">Top plays</span>
+                    </div>
+                    <ol className="list dashboard-score-list">
                         {recentScores.map((item, index) => (
                             <li key={`${item.gameName}-${item.createdAt}-${index}`} className="list-item">
                                 <span>{index + 1}</span>
@@ -101,6 +240,46 @@ function DashboardPage() {
             </div>
 
             {error ? <div className="error" style={{ width: "min(1100px, 100%)", margin: "14px auto 0" }}>{error}</div> : null}
+
+            <footer id="site-footer" className="site-footer">
+                <div className="site-footer-stack">
+                    <div className="site-footer-brand">Tap Tap games</div>
+                    <div className="site-footer-copy">Tap Tap © 2026. All rights reserved.</div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Get To Know Us</div>
+                    <div className="site-footer-links">
+                        <span className="site-footer-link">All Games</span>
+                        <span className="site-footer-link">Categories</span>
+                        <span className="site-footer-link">Progress</span>
+                    </div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Support</div>
+                    <div className="site-footer-links">
+                        <span className="site-footer-link">Contact Us</span>
+                        <span className="site-footer-link">FAQ</span>
+                        <span className="site-footer-link">Resources</span>
+                    </div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Privacy and Terms</div>
+                    <div className="site-footer-links">
+                        <span className="site-footer-link">Terms and Conditions</span>
+                        <span className="site-footer-link">Privacy Policy</span>
+                    </div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Follow Us</div>
+                    <div className="site-footer-socials">
+                        <span className="site-footer-social social-linkedin">in</span>
+                        <span className="site-footer-social social-tiktok">tt</span>
+                        <span className="site-footer-social social-youtube">yt</span>
+                        <span className="site-footer-social social-instagram">ig</span>
+                        <span className="site-footer-social social-facebook">f</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }
