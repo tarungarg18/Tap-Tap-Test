@@ -1,22 +1,30 @@
 (function registerTapTapApi(globalScope) {
     const TOKEN_KEY = "tap_tap_token";
     const USER_KEY = "tap_tap_user";
+    const REMEMBER_KEY = "tap_tap_remember";
 
     function getToken() {
-        return localStorage.getItem(TOKEN_KEY) || "";
+        return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || "";
     }
 
-    function setToken(token) {
+    function setToken(token, options = {}) {
+        const { persistent = true } = options;
+
         if (token) {
-            localStorage.setItem(TOKEN_KEY, token);
+            localStorage.removeItem(TOKEN_KEY);
+            sessionStorage.removeItem(TOKEN_KEY);
+            localStorage.setItem(REMEMBER_KEY, persistent ? "true" : "false");
+            const storage = persistent ? localStorage : sessionStorage;
+            storage.setItem(TOKEN_KEY, token);
         } else {
             localStorage.removeItem(TOKEN_KEY);
+            sessionStorage.removeItem(TOKEN_KEY);
         }
     }
 
     function getUser() {
         try {
-            const raw = localStorage.getItem(USER_KEY);
+            const raw = localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY);
             if (!raw) return null;
             return JSON.parse(raw);
         } catch {
@@ -24,23 +32,49 @@
         }
     }
 
-    function setUser(user) {
+    function setUser(user, options = {}) {
+        const { persistent = localStorage.getItem(REMEMBER_KEY) !== "false" } = options;
+
         if (user) {
-            localStorage.setItem(USER_KEY, JSON.stringify(user));
+            localStorage.removeItem(USER_KEY);
+            sessionStorage.removeItem(USER_KEY);
+            const storage = persistent ? localStorage : sessionStorage;
+            storage.setItem(USER_KEY, JSON.stringify(user));
         } else {
             localStorage.removeItem(USER_KEY);
+            sessionStorage.removeItem(USER_KEY);
         }
     }
 
     function clearSession() {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(USER_KEY);
+        localStorage.removeItem(REMEMBER_KEY);
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(USER_KEY);
+    }
+
+    function navigate(path, options = {}) {
+        const { replace = false } = options;
+        const currentPath = window.location.pathname;
+
+        if (!path || currentPath === path) {
+            return false;
+        }
+
+        if (replace) {
+            window.location.replace(path);
+        } else {
+            window.location.assign(path);
+        }
+
+        return true;
     }
 
     function requireAuth(redirectTo = "/login") {
         const token = getToken();
         if (!token) {
-            window.location.href = redirectTo;
+            navigate(redirectTo, { replace: true });
             return false;
         }
         return true;
@@ -81,27 +115,27 @@
         return payload;
     }
 
-    async function signup({ username, email, password }) {
+    async function signup({ username, email, password, remember = true }) {
         const result = await requestJson("/api/auth/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, email, password })
         });
 
-        setToken(result.token);
-        setUser(result.user);
+        setToken(result.token, { persistent: remember });
+        setUser(result.user, { persistent: remember });
         return result;
     }
 
-    async function login({ identifier, password }) {
+    async function login({ identifier, password, remember = true }) {
         const result = await requestJson("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ identifier, password })
         });
 
-        setToken(result.token);
-        setUser(result.user);
+        setToken(result.token, { persistent: remember });
+        setUser(result.user, { persistent: remember });
         return result;
     }
 
@@ -165,6 +199,7 @@
         getUser,
         setUser,
         clearSession,
+        navigate,
         requireAuth,
         signup,
         login,

@@ -46,24 +46,27 @@ function HomePage() {
         Tap: {
             title: "Tap",
             copy: "Fast reflex action where timing and speed decide your score.",
-            style: "arena"
+            style: "arena",
+            image: "/web/public/tap.jpeg"
         },
         sudoku: {
             title: "Sudoku",
             copy: "Solve logic puzzles with clean board controls and smooth play.",
-            style: "winter"
+            style: "winter",
+            image: "/web/public/suduko.jpeg"
         },
         "2048": {
             title: "2048",
             copy: "Combine tiles and chase the highest merging score.",
-            style: "matrix"
+            style: "matrix",
+            image: "/web/public/2048.jpeg"
         }
     };
     const spotlightCards = [
-        { title: "Internships", icon: "IN", tone: "blue" },
-        { title: "Mock Tests", icon: "MT", tone: "violet" },
-        { title: "Competitions", icon: "CP", tone: "amber" },
-        { title: "Courses", icon: "CR", tone: "cyan" }
+        { title: "NO OF GAMES", tone: "blue" },
+        { title: "SINGLE PLAYER GAME", tone: "violet" },
+        { title: "MULTIPLAYER GAME", tone: "amber" },
+        { title: "TOTAL USER", tone: "cyan" }
     ];
     const featuredCards = [
         { title: "Tap", copy: "Sharpen speed, timing, and leaderboard ranking with fast reflex rounds.", tone: "blue" },
@@ -71,9 +74,9 @@ function HomePage() {
         { title: "2048", copy: "Build smarter merge strategies and track your highest score in one place.", tone: "violet" }
     ];
     const trendingGames = [
-        { title: "Tap", genre: "Speed / Reflex", tone: "tap", game: "Tap" },
-        { title: "Sudoku", genre: "Logic / Puzzle", tone: "sudoku", game: "sudoku" },
-        { title: "2048", genre: "Merge / Strategy", tone: "2048", game: "2048" }
+        { title: "Tap", genre: "Speed / Reflex", tone: "tap", game: "Tap", image: "/web/public/tap.jpeg" },
+        { title: "Sudoku", genre: "Logic / Puzzle", tone: "sudoku", game: "sudoku", image: "/web/public/suduko.jpeg" },
+        { title: "2048", genre: "Merge / Strategy", tone: "2048", game: "2048", image: "/web/public/2048.jpeg" }
     ];
 
     const [user, setUser] = useState(api.getUser());
@@ -91,6 +94,8 @@ function HomePage() {
     const [showShortcutCard, setShowShortcutCard] = useState(true);
     const [shortcutAdded, setShortcutAdded] = useState(false);
     const [activePanel, setActivePanel] = useState("home");
+    const [sidebarExpanded, setSidebarExpanded] = useState(false);
+    const [sidebarProfileOpen, setSidebarProfileOpen] = useState(false);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
@@ -174,13 +179,13 @@ function HomePage() {
         loadGameData();
     }, [selectedGameSafe]);
 
-    function goToPlay(levelName) {
-        if (!selectedGameSafe || !levelName) return;
+    function goToPlay(levelName, gameName = selectedGameSafe) {
+        if (!gameName || !levelName) return;
         if (!api.getToken()) {
             window.location.href = "/login";
             return;
         }
-        const url = `/games/${encodeURIComponent(selectedGameSafe)}?level=${encodeURIComponent(levelName)}`;
+        const url = `/games/${encodeURIComponent(gameName)}?level=${encodeURIComponent(levelName)}`;
         window.location.href = url;
     }
 
@@ -357,21 +362,15 @@ function HomePage() {
             <nav className="navbar">
                 <div className="navbar-brand">
                     <div className="navbar-game-brand">
-                        <div className="navbar-game-brand-line">Tap Tap</div>
-                        <div className="navbar-game-brand-line">games</div>
+                        <div className="navbar-game-brand-line">GAME</div>
+                        <div className="navbar-game-brand-line">HUB</div>
                     </div>
                 </div>
 
                 <div className="navbar-center">
                     <button className="nav-pill active" type="button">Home</button>
-                    <button
-                        className="nav-pill"
-                        type="button"
-                        onClick={() => (window.location.href = "/dashboard")}
-                    >
-                        Dashboard
-                    </button>
-                    <button className="nav-pill" type="button" onClick={scrollToFooter}>About</button>
+                   
+                   
                 </div>
 
                 <div className="navbar-actions">
@@ -406,7 +405,9 @@ function HomePage() {
                                                     jumpToSection("games");
                                                 }}
                                             >
-                                                <div className={`search-card-art ${item.tone === "2048" ? "two048" : item.tone}`}></div>
+                                                <div className={`search-card-art ${item.tone === "2048" ? "two048" : item.tone}`}>
+                                                    <img className="search-card-image" src={item.image} alt={item.title} />
+                                                </div>
                                                 <div className="search-game-overlay">
                                                     <strong>{item.title}</strong>
                                                     <span>{item.genre}</span>
@@ -503,14 +504,38 @@ function HomePage() {
 
             {searchOpen ? <div className="search-overlay" onClick={() => setSearchOpen(false)}></div> : null}
             <div className="showcase-layout">
-                <aside className="showcase-sidebar card">
-                    <button className="showcase-post">+ Start Playing</button>
+                {sidebarExpanded ? (
+                    <button
+                        className="showcase-sidebar-backdrop"
+                        type="button"
+                        aria-label="Close sidebar"
+                        onClick={() => {
+                            setSidebarExpanded(false);
+                            setSidebarProfileOpen(false);
+                        }}
+                    ></button>
+                ) : null}
+                <aside className={`showcase-sidebar card ${sidebarExpanded ? "expanded" : ""}`}>
+                    <button
+                        className={`showcase-sidebar-toggle ${sidebarExpanded ? "active" : ""}`}
+                        type="button"
+                        onClick={() => setSidebarExpanded((value) => !value)}
+                        aria-label={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
+                        title={sidebarExpanded ? "Collapse sidebar" : "Expand sidebar"}
+                    >
+                        <span className="showcase-sidebar-toggle-bar"></span>
+                        <span className="showcase-sidebar-toggle-bar"></span>
+                        <span className="showcase-sidebar-toggle-bar"></span>
+                    </button>
+                    
 
                     <div className="showcase-menu">
                         <button
                             className={`showcase-menu-item ${activePanel === "home" ? "active" : ""}`}
                             type="button"
                             onClick={() => jumpToSection("home")}
+                            aria-label="Home"
+                            title="Home"
                         >
                             <span className="menu-icon menu-icon-home"></span>
                             <span className="menu-label">Home</span>
@@ -519,149 +544,68 @@ function HomePage() {
                             className={`showcase-menu-item ${activePanel === "games" ? "active" : ""}`}
                             type="button"
                             onClick={() => jumpToSection("games")}
+                            aria-label="Games"
+                            title="Games"
                         >
                             <span className="menu-icon menu-icon-games"></span>
                             <span className="menu-label">Games</span>
                         </button>
                         <button
-                            className={`showcase-menu-item ${activePanel === "featured" ? "active" : ""}`}
+                            className="showcase-menu-item"
                             type="button"
-                            onClick={() => jumpToSection("featured")}
+                            onClick={() => api.navigate("/dashboard")}
+                            aria-label="Dashboard"
+                            title="Dashboard"
                         >
-                            <span className="menu-icon menu-icon-competitions"></span>
-                            <span className="menu-label">Competitions</span>
-                        </button>
-                        <button
-                            className={`showcase-menu-item ${activePanel === "featured" ? "active" : ""}`}
-                            type="button"
-                            onClick={() => jumpToSection("featured")}
-                        >
-                            <span className="menu-icon menu-icon-mock"></span>
-                            <span className="menu-label">Mock Tests</span>
-                        </button>
-                        <button
-                            className={`showcase-menu-item ${activePanel === "editor" ? "active" : ""}`}
-                            type="button"
-                            onClick={() => jumpToSection("editor")}
-                        >
-                            <span className="menu-icon menu-icon-flex"></span>
-                            <span className="menu-label">Flexible JSON</span>
-                        </button>
-                        <button
-                            className={`showcase-menu-item ${activePanel === "controls" ? "active" : ""}`}
-                            type="button"
-                            onClick={() => jumpToSection("controls")}
-                        >
-                            <span className="menu-icon menu-icon-progress"></span>
-                            <span className="menu-label">Progress</span>
+                            <span className="menu-icon menu-icon-dashboard"></span>
+                            <span className="menu-label">Dashboard</span>
                         </button>
                         <button
                             className={`showcase-menu-item ${activePanel === "multiplayer" ? "active" : ""}`}
                             type="button"
                             onClick={() => jumpToSection("multiplayer")}
+                            aria-label="Multiplayer"
+                            title="Multiplayer"
                         >
                             <span className="menu-icon menu-icon-multiplayer"></span>
                             <span className="menu-label">Multiplayer</span>
                         </button>
                     </div>
 
-                    <div className="showcase-profile">
-                        <strong>{user?.username || "Player"}</strong>
-                        <span>{user?.email || "Ready to play"}</span>
+                    <div className="showcase-profile-wrap">
+                        <button
+                            className={`showcase-profile-button ${sidebarProfileOpen ? "active" : ""}`}
+                            type="button"
+                            onClick={() => setSidebarProfileOpen((value) => !value)}
+                            aria-label="Open user profile"
+                            title="User profile"
+                        >
+                            <span className="showcase-profile-icon">
+                                <span className="profile-icon-head"></span>
+                                <span className="profile-icon-body"></span>
+                            </span>
+                        </button>
+
+                        {sidebarProfileOpen ? (
+                            <div className="showcase-profile">
+                                <strong>{user?.username || "Player"}</strong>
+                                <span>{user?.email || "Ready to play"}</span>
+                            </div>
+                        ) : null}
                     </div>
                 </aside>
 
                 <main className="showcase-main">
                     <section id="home" className="hero-shell card">
-                        <div className="hero-topline">Tap Tap Player Space</div>
-                        <div className="hero-banner">
-                            <div>
-                                <h1 className="hero-title">
-                                    Unlock Your <span>Game Flow!</span>
-                                </h1>
-                                <div className="hero-copy">
-                                    Explore polished game modes, launch saved levels, and edit flexible JSON from one attractive Tap Tap dashboard.
-                                </div>
-                            </div>
-                            <div className="hero-chip">Live player tools for Tap, Sudoku, and 2048</div>
-                        </div>
+                       
+                       
 
                         <div className="spotlight-grid">
                             {spotlightCards.map((item) => (
                                 <div key={item.title} className={`spotlight-card tone-${item.tone}`}>
                                     <div className="spotlight-title">{item.title}</div>
-                                    <div className="spotlight-icon">{item.icon}</div>
+                                    <div className="spotlight-icon" aria-hidden="true">4</div>
                                 </div>
-                            ))}
-                        </div>
-                    </section>
-
-                    <div className="home-grid">
-                        <section id="controls" className="card">
-                            <h2>Player Controls</h2>
-                            <div className="muted" style={{ marginTop: "6px" }}>
-                                {user
-                                    ? <>Logged in as <strong>{user?.username || "-"}</strong> ({user?.email || "-"})</>
-                                    : <>Browse games freely. <strong>Login is required</strong> to start playing and save flexible levels.</>}
-                            </div>
-
-                            <div className="field" style={{ marginTop: "14px" }}>
-                                <label>Select Game</label>
-                                <select value={selectedGameSafe} onChange={(e) => setSelectedGame(e.target.value)} disabled={busy}>
-                                    {games.map((gameName) => (
-                                        <option key={gameName} value={gameName}>{gameName}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="field">
-                                <label>Select Level</label>
-                                <select value={selectedLevel} onChange={(e) => setSelectedLevel(e.target.value)} disabled={busy}>
-                                    {levels.map((levelName) => (
-                                        <option key={levelName} value={levelName}>{levelName}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="row" style={{ marginTop: "12px" }}>
-                                <button onClick={() => goToPlay(selectedLevel)} disabled={busy || !selectedLevel}>Play Selected Level</button>
-                                <button className="secondary" onClick={() => goToPlay("flexible.json")} disabled={busy}>Play flexible.json</button>
-                            </div>
-
-                            {error ? <div className="error">{error}</div> : null}
-                            {success ? <div className="success-text">{success}</div> : null}
-                        </section>
-
-                        <section id="editor" className="card">
-                            <h2>Flexible Level Editor</h2>
-                            <div className="muted" style={{ marginTop: "6px" }}>
-                                Modify `flexible.json` for <strong>{selectedGameSafe || "-"}</strong> and play instantly.
-                            </div>
-
-                            <div className="field" style={{ marginTop: "12px" }}>
-                                <label>flexible.json</label>
-                                <textarea value={flexibleRaw} onChange={(e) => setFlexibleRaw(e.target.value)} spellCheck={false} />
-                            </div>
-
-                            <div className="json-toolbar">
-                                <button className="success" onClick={saveFlexible} disabled={busy}>Save flexible.json</button>
-                                <button className="secondary" onClick={formatFlexible} disabled={busy}>Format JSON</button>
-                                <button className="secondary" onClick={resetFlexible} disabled={busy}>Reset to Loaded</button>
-                                <button className="secondary" onClick={() => setFlexibleRaw("{}")} disabled={busy}>Start from Empty</button>
-                            </div>
-                        </section>
-                    </div>
-
-                    <section id="featured" className="featured-shell">
-                        <div className="featured-heading">Featured</div>
-                        <div className="featured-grid">
-                            {featuredCards.map((item) => (
-                                <article key={item.title} className={`featured-card tone-${item.tone}`}>
-                                    <div className="featured-card-inner">
-                                        <h3>{item.title}</h3>
-                                        <p>{item.copy}</p>
-                                    </div>
-                                </article>
                             ))}
                         </div>
                     </section>
@@ -675,7 +619,11 @@ function HomePage() {
                                     className={`promo-game-card ${selectedGame === name ? "active" : ""}`}
                                 >
                                     <div className={`promo-game-art promo-game-art-${gameCardMeta[name]?.style || "matrix"}`}>
-                                        <div className="promo-game-badge">Skill Games</div>
+                                        <img
+                                            className="promo-game-image"
+                                            src={gameCardMeta[name]?.image}
+                                            alt={gameCardMeta[name]?.title || name}
+                                        />
                                         <div className="promo-game-scene"></div>
                                     </div>
 
@@ -697,7 +645,8 @@ function HomePage() {
                                             className="promo-button promo-button-secondary"
                                             onClick={() => {
                                                 setSelectedGame(name);
-                                                goToPlay(name === selectedGame ? (selectedLevel || "level1.json") : "level1.json");
+                                                const levelToOpen = name === selectedGame ? (selectedLevel || "level1.json") : "level1.json";
+                                                goToPlay(levelToOpen, name);
                                             }}
                                         >
                                             Play now
@@ -719,8 +668,8 @@ function HomePage() {
 
             <footer id="site-footer" className="site-footer">
                 <div className="site-footer-stack">
-                    <div className="site-footer-brand">Tap Tap games</div>
-                    <div className="site-footer-copy">Tap Tap © 2026. All rights reserved.</div>
+                    <div className="site-footer-brand">GAME HUB</div>
+                    <div className="site-footer-copy">Game Hub © 2026. All rights reserved.</div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Get To Know Us</div>
@@ -759,32 +708,7 @@ function HomePage() {
                 </div>
             </footer>
 
-            {showShortcutCard ? (
-                <section className="shortcut-card" aria-live="polite">
-                    <div className="shortcut-card-brand">
-                        <div className="shortcut-card-logo">
-                            <div className="shortcut-card-logo-line">Tap Tap</div>
-                            <div className="shortcut-card-logo-line">games</div>
-                        </div>
-                    </div>
-                    <div className="shortcut-card-copy">
-                        <h3>{shortcutAdded ? "Shortcut ready for Tap Tap" : "Tap Tap on the desktop"}</h3>
-                        <p>
-                            {shortcutAdded
-                                ? "Home link copied. You can pin it as a shortcut anytime."
-                                : <>To quickly start games, add a shortcut for Tap, Sudoku, and 2048.</>}
-                        </p>
-                    </div>
-                    <div className="shortcut-card-actions">
-                        <button className="shortcut-button shortcut-button-secondary" type="button" onClick={dismissShortcutCard}>
-                            Later
-                        </button>
-                        <button className="shortcut-button shortcut-button-primary" type="button" onClick={addShortcutCard}>
-                            {shortcutAdded ? "Added" : "Add"}
-                        </button>
-                    </div>
-                </section>
-            ) : null}
+           
         </div>
     );
 }

@@ -27,7 +27,7 @@ function LoginPage() {
 
         api.getMe()
             .then(() => {
-                window.location.href = "/home";
+                api.navigate("/home", { replace: true });
             })
             .catch(() => {
                 api.clearSession();
@@ -46,8 +46,8 @@ function LoginPage() {
         setError("");
 
         try {
-            await api.login({ identifier, password });
-            window.location.href = "/home";
+            await api.login({ identifier, password, remember });
+            api.navigate("/home");
         } catch (err) {
             setError(err.message || "Login failed");
         } finally {
@@ -65,12 +65,12 @@ function LoginPage() {
         if (!query) return;
 
         if (query.includes("home") || query.includes("tap") || query.includes("sudoku") || query.includes("2048")) {
-            window.location.href = "/home";
+            api.navigate("/home");
             return;
         }
 
         if (query.includes("dashboard")) {
-            window.location.href = "/dashboard";
+            api.navigate("/dashboard");
             return;
         }
 
@@ -80,7 +80,7 @@ function LoginPage() {
         }
 
         if (query.includes("signup") || query.includes("create")) {
-            window.location.href = "/signup";
+            api.navigate("/signup");
         }
     }
 
@@ -92,10 +92,11 @@ function LoginPage() {
     const [remember, setRemember] = useState(false);
 
     return (
-        <div className="page-wrap auth-page-stack login-page">
+        <div className="page-wrap auth-page-stack auth-page-grid login-page">
             <div className="login-hero-card card login-hero-title-card">
-                <div className="hero-eyebrow">Welcome to the website</div>
-                <a className="hero-button" href="/signup">Create Account</a>
+                <div className="hero-eyebrow">WELCOME TO GAME HUB</div>
+                <p className="hero-text">Your Next Game Starts Here</p>
+              
             </div>
 
             <div className="login-card card login-panel-card">

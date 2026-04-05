@@ -46,7 +46,7 @@ function DashboardPage() {
 
     function logout() {
         api.logout();
-        window.location.href = "/login";
+        api.navigate("/login");
     }
 
     function scrollToFooter() {
@@ -59,7 +59,7 @@ function DashboardPage() {
         if (!query) return;
 
         if (query.includes("home") || query.includes("tap") || query.includes("sudoku") || query.includes("2048")) {
-            window.location.href = "/home";
+            api.navigate("/home");
             return;
         }
 
@@ -69,12 +69,12 @@ function DashboardPage() {
         }
 
         if (query.includes("login")) {
-            window.location.href = "/login";
+            api.navigate("/login");
             return;
         }
 
         if (query.includes("signup") || query.includes("create")) {
-            window.location.href = "/signup";
+            api.navigate("/signup");
         }
     }
 
@@ -92,7 +92,7 @@ function DashboardPage() {
                     <button
                         className="nav-pill"
                         type="button"
-                        onClick={() => (window.location.href = "/home")}
+                        onClick={() => api.navigate("/home")}
                     >
                         Home
                     </button>
@@ -145,14 +145,14 @@ function DashboardPage() {
                                         <button
                                             className="profile-card-edit"
                                             type="button"
-                                            onClick={() => (window.location.href = "/dashboard")}
+                                            onClick={() => api.navigate("/dashboard")}
                                         >
                                             Edit Profile
                                         </button>
                                         <button
                                             className="profile-card-next"
                                             type="button"
-                                            onClick={() => (window.location.href = "/dashboard")}
+                                            onClick={() => api.navigate("/dashboard")}
                                             aria-label="Open profile page"
                                         >
                                             <span className="profile-card-next-icon"></span>

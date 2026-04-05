@@ -30,7 +30,7 @@ function SignupPage() {
 
         api.getMe()
             .then(() => {
-                window.location.href = "/home";
+                api.navigate("/home", { replace: true });
             })
             .catch(() => {
                 api.clearSession();
@@ -50,7 +50,7 @@ function SignupPage() {
 
         try {
             await api.signup({ username, email, password });
-            window.location.href = "/home";
+            api.navigate("/home");
         } catch (err) {
             setError(err.message || "Signup failed");
         } finally {
@@ -68,12 +68,12 @@ function SignupPage() {
         if (!query) return;
 
         if (query.includes("home") || query.includes("tap") || query.includes("sudoku") || query.includes("2048")) {
-            window.location.href = "/home";
+            api.navigate("/home");
             return;
         }
 
         if (query.includes("dashboard")) {
-            window.location.href = "/dashboard";
+            api.navigate("/dashboard");
             return;
         }
 
@@ -83,7 +83,7 @@ function SignupPage() {
         }
 
         if (query.includes("login")) {
-            window.location.href = "/login";
+            api.navigate("/login");
         }
     }
 
@@ -93,10 +93,10 @@ function SignupPage() {
     }
 
     return (
-        <div className="page-wrap auth-page-stack login-page">
+        <div className="page-wrap auth-page-stack auth-page-grid login-page">
             <div className="login-hero-card card login-hero-title-card">
-                <div className="hero-eyebrow">Welcome to the website</div>
-                <a className="hero-button" href="/login">Already have account?</a>
+                <div className="hero-eyebrow">WELCOME TO  GAMEHUB</div>
+              <p className="hero-text" >Your Next Game Starts Here</p>
             </div>
 
             <div className="login-card card login-panel-card">

@@ -196,7 +196,7 @@ function App() {
 
     function logout() {
         api.logout();
-        window.location.href = "/login";
+        api.navigate("/login");
     }
 
     return (
@@ -204,8 +204,8 @@ function App() {
             <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "space-between", gap: "10px", alignItems: "center" }}>
                 <div style={{ color: "#6b5f55" }}>Signed in as <strong>{user?.username || "-"}</strong></div>
                 <div style={{ display: "flex", gap: "8px" }}>
-                    <button className="btn-secondary" onClick={() => (window.location.href = "/home")}>Home</button>
-                    <button className="btn-secondary" onClick={() => (window.location.href = "/dashboard")}>Dashboard</button>
+                    <button className="btn-secondary" onClick={() => api.navigate("/home")}>Home</button>
+                    <button className="btn-secondary" onClick={() => api.navigate("/dashboard")}>Dashboard</button>
                     <button className="btn-secondary" onClick={logout}>Logout</button>
                 </div>
             </div>
