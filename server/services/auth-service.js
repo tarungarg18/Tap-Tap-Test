@@ -7,7 +7,14 @@ const { createHttpError } = require("../utils/errors");
 const SALT_ROUNDS = 10;
 
 function getJwtSecret() {
-    return process.env.JWT_SECRET || "tap_tap_dev_secret_change_me";
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+        if (process.env.NODE_ENV === "production") {
+            throw new Error("JWT_SECRET environment variable is required in production");
+        }
+        return "tap_tap_dev_secret_change_me";
+    }
+    return secret;
 }
 
 function isValidEmail(email) {
@@ -90,7 +97,7 @@ async function login({ identifier, password }) {
 
     const user = await User.findOne({
         $or: [{ username: normalizedIdentifier }, { email: normalizedIdentifier }]
-    });
+    }).select("+passwordHash");
 
     if (!user) {
         throw createHttpError(401, "Invalid credentials");

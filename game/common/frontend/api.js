@@ -74,6 +74,10 @@
         }
 
         if (!response.ok) {
+            if (auth && response.status === 401) {
+                clearSession();
+                window.location.assign("/login");
+            }
             const message = payload?.error || `Request failed (${response.status})`;
             throw new Error(message);
         }
@@ -122,15 +126,15 @@
     }
 
     function getLevels(gameName) {
-        return requestJson(`/api/games/${gameName}/levels`);
+        return requestJson(`/api/games/${gameName}/levels`, { auth: true });
     }
 
     function getLevelConfig(gameName, levelFile) {
-        return requestJson(`/api/games/${gameName}/config/${levelFile}`);
+        return requestJson(`/api/games/${gameName}/config/${levelFile}`, { auth: true });
     }
 
     function getFlexibleConfig(gameName) {
-        return requestJson(`/api/games/${gameName}/flexible`);
+        return requestJson(`/api/games/${gameName}/flexible`, { auth: true });
     }
 
     function updateFlexibleConfig(gameName, configObject) {
@@ -143,7 +147,12 @@
     }
 
     function getLeaderboard(gameName) {
-        return requestJson(`/api/games/${gameName}/leaderboard`);
+        return requestJson(`/api/games/${gameName}/leaderboard`, { auth: true });
+    }
+
+    function getAllLeaderboards(limit) {
+        const query = limit != null ? `?limit=${encodeURIComponent(String(limit))}` : "";
+        return requestJson(`/api/games/leaderboards${query}`, { auth: true });
     }
 
     function submitLeaderboard(gameName, body) {
@@ -176,6 +185,7 @@
         getFlexibleConfig,
         updateFlexibleConfig,
         getLeaderboard,
+        getAllLeaderboards,
         submitLeaderboard,
         getDashboard
     };

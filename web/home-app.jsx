@@ -57,6 +57,11 @@ function HomePage() {
             title: "2048",
             copy: "Combine tiles and chase the highest merging score.",
             style: "matrix"
+        },
+        ludo: {
+            title: "Ludo",
+            copy: "Play turn-based Ludo with standard rules in 2, 3, or 4 player modes.",
+            style: "arena"
         }
     };
     const spotlightCards = [
@@ -68,12 +73,14 @@ function HomePage() {
     const featuredCards = [
         { title: "Tap", copy: "Sharpen speed, timing, and leaderboard ranking with fast reflex rounds.", tone: "blue" },
         { title: "Sudoku", copy: "Train logic with polished puzzles and save custom flexible setups instantly.", tone: "lime" },
-        { title: "2048", copy: "Build smarter merge strategies and track your highest score in one place.", tone: "violet" }
+        { title: "2048", copy: "Build smarter merge strategies and track your highest score in one place.", tone: "violet" },
+        { title: "Ludo", copy: "Roll, move, and capture in classic Ludo formats powered by JSON configs.", tone: "amber" }
     ];
     const trendingGames = [
         { title: "Tap", genre: "Speed / Reflex", tone: "tap", game: "Tap" },
         { title: "Sudoku", genre: "Logic / Puzzle", tone: "sudoku", game: "sudoku" },
-        { title: "2048", genre: "Merge / Strategy", tone: "2048", game: "2048" }
+        { title: "2048", genre: "Merge / Strategy", tone: "2048", game: "2048" },
+        { title: "Ludo", genre: "Board / Strategy", tone: "tap", game: "ludo" }
     ];
 
     const [user, setUser] = useState(api.getUser());
@@ -94,6 +101,8 @@ function HomePage() {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [allLeaderboards, setAllLeaderboards] = useState(null);
+    const [leaderboardsLoading, setLeaderboardsLoading] = useState(false);
 
     const selectedGameSafe = useMemo(() => selectedGame || "", [selectedGame]);
 
@@ -119,7 +128,7 @@ function HomePage() {
                     ? gamesPayload.games.map((item) => item.name)
                     : [];
 
-                const preferredOrder = ["Tap", "sudoku", "2048"];
+                const preferredOrder = ["Tap", "sudoku", "2048", "ludo"];
                 const orderedGames = [
                     ...preferredOrder.filter((name) => availableGames.includes(name)),
                     ...availableGames.filter((name) => !preferredOrder.includes(name))
@@ -139,12 +148,54 @@ function HomePage() {
     }, []);
 
     useEffect(() => {
+        if (!user || !api.getToken()) {
+            setAllLeaderboards(null);
+            setLeaderboardsLoading(false);
+            return;
+        }
+
+        let active = true;
+        setLeaderboardsLoading(true);
+
+        api.getAllLeaderboards(10)
+            .then((payload) => {
+                if (active) {
+                    setAllLeaderboards(payload?.leaderboards && typeof payload.leaderboards === "object" ? payload.leaderboards : {});
+                }
+            })
+            .catch(() => {
+                if (active) {
+                    setAllLeaderboards(null);
+                }
+            })
+            .finally(() => {
+                if (active) {
+                    setLeaderboardsLoading(false);
+                }
+            });
+
+        return () => {
+            active = false;
+        };
+    }, [user?.id]);
+
+    useEffect(() => {
         if (!selectedGameSafe) return;
 
         async function loadGameData() {
-            setBusy(true);
             setError("");
             setSuccess("");
+
+            if (!api.getToken()) {
+                setBusy(false);
+                setLevels([]);
+                setSelectedLevel("");
+                setFlexibleRaw("{}");
+                setFlexibleBase({});
+                return;
+            }
+
+            setBusy(true);
 
             try {
                 const [levelsPayload, flexiblePayload] = await Promise.all([
@@ -176,6 +227,10 @@ function HomePage() {
 
     function goToPlay(levelName) {
         if (!selectedGameSafe || !levelName) return;
+        if (selectedGameSafe.toLowerCase() === "ludo") {
+            window.location.href = `/games/${encodeURIComponent(selectedGameSafe)}`;
+            return;
+        }
         if (!api.getToken()) {
             window.location.href = "/login";
             return;
@@ -333,7 +388,7 @@ function HomePage() {
             return;
         }
 
-        if (query.includes("game") || query.includes("tap") || query.includes("sudoku") || query.includes("2048")) {
+        if (query.includes("game") || query.includes("tap") || query.includes("sudoku") || query.includes("2048") || query.includes("ludo")) {
             const matchedGame = trendingGames.find((item) => {
                 const title = item.title.toLowerCase();
                 const game = item.game.toLowerCase();
@@ -583,7 +638,7 @@ function HomePage() {
                                     Explore polished game modes, launch saved levels, and edit flexible JSON from one attractive Tap Tap dashboard.
                                 </div>
                             </div>
-                            <div className="hero-chip">Live player tools for Tap, Sudoku, and 2048</div>
+                            <div className="hero-chip">Live player tools for Tap, Sudoku, 2048, and Ludo</div>
                         </div>
 
                         <div className="spotlight-grid">
@@ -602,7 +657,7 @@ function HomePage() {
                             <div className="muted" style={{ marginTop: "6px" }}>
                                 {user
                                     ? <>Logged in as <strong>{user?.username || "-"}</strong> ({user?.email || "-"})</>
-                                    : <>Browse games freely. <strong>Login is required</strong> to start playing and save flexible levels.</>}
+                                    : <>Browse the game list freely. <strong>Log in</strong> to load levels, flexible JSON, leaderboards, and to play.</>}
                             </div>
 
                             <div className="field" style={{ marginTop: "14px" }}>
@@ -664,6 +719,50 @@ function HomePage() {
                                 </article>
                             ))}
                         </div>
+                    </section>
+
+                    <section id="leaderboards" className="card">
+                        <h2>Leaderboards</h2>
+                        <div className="muted" style={{ marginTop: "6px" }}>
+                            Top players for each title, loaded together for every installed game after you sign in.
+                        </div>
+
+                        {!user ? (
+                            <div className="muted" style={{ marginTop: "14px" }}>
+                                Log in to view leaderboards.
+                            </div>
+                        ) : leaderboardsLoading ? (
+                            <div className="muted" style={{ marginTop: "14px" }}>Loading leaderboards…</div>
+                        ) : allLeaderboards ? (
+                            <div style={{ marginTop: "14px" }}>
+                                <div className="field">
+                                    <label>Game</label>
+                                    <select
+                                        value={selectedGameSafe}
+                                        onChange={(event) => setSelectedGame(event.target.value)}
+                                        disabled={busy || games.length === 0}
+                                    >
+                                        {games.map((gameName) => (
+                                            <option key={gameName} value={gameName}>{gameName}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <ol className="list" style={{ marginTop: "12px" }}>
+                                    {(Array.isArray(allLeaderboards[selectedGameSafe]) ? allLeaderboards[selectedGameSafe] : []).map((row, index) => (
+                                        <li key={`${row.userId}-${index}`} className="list-item">
+                                            <span>{index + 1}</span>
+                                            <span><strong>{row.username}</strong></span>
+                                            <strong>{row.score}</strong>
+                                        </li>
+                                    ))}
+                                </ol>
+                                {(Array.isArray(allLeaderboards[selectedGameSafe]) ? allLeaderboards[selectedGameSafe] : []).length === 0 ? (
+                                    <div className="muted" style={{ marginTop: "8px" }}>No scores for this game yet.</div>
+                                ) : null}
+                            </div>
+                        ) : (
+                            <div className="error" style={{ marginTop: "14px" }}>Could not load leaderboards.</div>
+                        )}
                     </section>
 
                     <section id="games" className="card">
@@ -772,7 +871,7 @@ function HomePage() {
                         <p>
                             {shortcutAdded
                                 ? "Home link copied. You can pin it as a shortcut anytime."
-                                : <>To quickly start games, add a shortcut for Tap, Sudoku, and 2048.</>}
+                                : <>To quickly start games, add a shortcut for Tap, Sudoku, 2048, and Ludo.</>}
                         </p>
                     </div>
                     <div className="shortcut-card-actions">
@@ -791,3 +890,4 @@ function HomePage() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<HomePage />);
+

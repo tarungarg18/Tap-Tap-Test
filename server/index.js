@@ -1,3 +1,5 @@
+const http = require("http");
+
 const { createApp } = require("./app");
 const { connectMongo } = require("./db/connect");
 
@@ -8,7 +10,9 @@ async function startServer() {
         await connectMongo();
 
         const app = createApp();
-        app.listen(PORT, () => {
+        const httpServer = http.createServer(app);
+
+        httpServer.listen(PORT, () => {
             console.log(`Tap-Tap web server running on http://localhost:${PORT}`);
         });
     } catch (err) {

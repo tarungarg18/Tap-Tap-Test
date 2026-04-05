@@ -76,14 +76,18 @@ function App() {
         submitLockRef.current = true;
 
         try {
-            await api.submitLeaderboard(GAME_NAME, {
+            const result = await api.submitLeaderboard(GAME_NAME, {
                 score: finalSnapshot.score || 0,
                 reason: finalSnapshot.reason || "FINISHED",
                 level: levelFile
             });
 
             await loadLeaderboard();
-            setStatusText(`Score saved for ${user?.username || "user"}`);
+            setStatusText(
+                result?.improved
+                    ? `New personal best recorded for ${user?.username || "you"}.`
+                    : "Run finished — score did not beat your existing record."
+            );
         } catch (err) {
             setErrorText(err.message || "Failed to save score");
         }
