@@ -43,7 +43,7 @@ function summarizeFlexibleConfig(config) {
 function HomePage() {
     const api = window.TapTapApi;
     const gameCardMeta = {
-        Tap: {
+        tap: {
             title: "Tap",
             copy: "Fast reflex action where timing and speed decide your score.",
             style: "arena",
@@ -60,13 +60,19 @@ function HomePage() {
             copy: "Combine tiles and chase the highest merging score.",
             style: "matrix",
             image: "/web/public/2048.jpeg"
+        },
+        ludo: {
+            title: "ludo",
+            copy: "Jump into this game and start playing right away.",
+            style: "arena",
+            image: "/web/public/ludo.jpeg"
         }
     };
     const spotlightCards = [
-        { title: "NO OF GAMES", tone: "blue" },
-        { title: "SINGLE PLAYER GAME", tone: "violet" },
-        { title: "MULTIPLAYER GAME", tone: "amber" },
-        { title: "TOTAL USER", tone: "cyan" }
+        { title: "NO OF GAMES", tone: "blue", key: "totalGames" },
+        { title: "SINGLE PLAYER GAME", tone: "violet", key: "singlePlayerCount" },
+        { title: "MULTIPLAYER GAME", tone: "amber", key: "multiplayerCount" },
+        { title: "TOTAL USER", tone: "cyan", key: "totalUsers" }
     ];
     const featuredCards = [
         { title: "Tap", copy: "Sharpen speed, timing, and leaderboard ranking with fast reflex rounds.", tone: "blue" },
@@ -80,7 +86,8 @@ function HomePage() {
     ];
 
     const [user, setUser] = useState(api.getUser());
-    const [games, setGames] = useState([]);
+    const [singleGames, setSingleGames] = useState([]);
+    const [multiplayerGames, setMultiplayerGames] = useState([]);
     const [selectedGame, setSelectedGame] = useState("");
     const [levels, setLevels] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
@@ -99,6 +106,14 @@ function HomePage() {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+    const [spotlightCounts, setSpotlightCounts] = useState({
+        totalGames: 0,
+        singlePlayerCount: 0,
+        multiplayerCount: 0,
+        totalUsers: 0
+    });
+
+    const toSlug = (value) => String(value || "").toLowerCase();
 
     const selectedGameSafe = useMemo(() => selectedGame || "", [selectedGame]);
 
@@ -113,27 +128,40 @@ function HomePage() {
             try {
                 const token = api.getToken();
                 const requests = token
-                    ? [api.getMe().catch(() => ({ user: null })), api.getGames()]
-                    : [Promise.resolve({ user: null }), api.getGames()];
+                    ? [api.getMe().catch(() => ({ user: null })), api.getGameSummary()]
+                    : [Promise.resolve({ user: null }), api.getGameSummary()];
 
-                const [mePayload, gamesPayload] = await Promise.all(requests);
+                const [mePayload, summaryPayload] = await Promise.all(requests);
 
                 setUser(mePayload?.user || null);
 
-                const availableGames = Array.isArray(gamesPayload?.games)
-                    ? gamesPayload.games.map((item) => item.name)
+                const singleList = Array.isArray(summaryPayload?.singlePlayerGames)
+                    ? summaryPayload.singlePlayerGames
                     : [];
 
-                const preferredOrder = ["Tap", "sudoku", "2048"];
-                const orderedGames = [
-                    ...preferredOrder.filter((name) => availableGames.includes(name)),
-                    ...availableGames.filter((name) => !preferredOrder.includes(name))
+                const multiList = Array.isArray(summaryPayload?.multiplayerGames)
+                    ? summaryPayload.multiplayerGames
+                    : [];
+
+                setSingleGames(singleList);
+                setMultiplayerGames(multiList);
+
+                setSpotlightCounts({
+                    totalGames: summaryPayload && summaryPayload.totalGames != null ? summaryPayload.totalGames : singleList.length + multiList.length,
+                    singlePlayerCount: summaryPayload && summaryPayload.singlePlayerCount != null ? summaryPayload.singlePlayerCount : singleList.length,
+                    multiplayerCount: summaryPayload && summaryPayload.multiplayerCount != null ? summaryPayload.multiplayerCount : multiList.length,
+                    totalUsers: summaryPayload && summaryPayload.totalUsers != null ? summaryPayload.totalUsers : 0
+                });
+
+                const singleSlugs = singleList.map((item) => item.slug || toSlug(item.name));
+                const preferredOrder = ["tap", "sudoku", "2048"];
+                const ordered = [
+                    ...preferredOrder.filter((slug) => singleSlugs.includes(slug)),
+                    ...singleSlugs.filter((slug) => !preferredOrder.includes(slug))
                 ];
 
-                setGames(orderedGames);
-
-                if (orderedGames.length > 0) {
-                    setSelectedGame(orderedGames[0]);
+                if (ordered.length > 0) {
+                    setSelectedGame(ordered[0]);
                 }
             } catch (err) {
                 setError(err.message || "Failed to load home");
@@ -346,7 +374,7 @@ function HomePage() {
             });
 
             if (matchedGame) {
-                setSelectedGame(matchedGame.game);
+                setSelectedGame(toSlug(matchedGame.game));
             }
 
             jumpToSection("games");
@@ -400,7 +428,7 @@ function HomePage() {
                                                 type="button"
                                                 className={`search-game-card tone-${item.tone}`}
                                                 onClick={() => {
-                                                    setSelectedGame(item.game);
+                                                    setSelectedGame(toSlug(item.game));
                                                     setSearchOpen(false);
                                                     jumpToSection("games");
                                                 }}
@@ -601,67 +629,127 @@ function HomePage() {
                        
 
                         <div className="spotlight-grid">
-                            {spotlightCards.map((item) => (
-                                <div key={item.title} className={`spotlight-card tone-${item.tone}`}>
-                                    <div className="spotlight-title">{item.title}</div>
-                                    <div className="spotlight-icon" aria-hidden="true">4</div>
-                                </div>
-                            ))}
+                            {spotlightCards.map((item) => {
+                                const value = spotlightCounts[item.key] != null ? spotlightCounts[item.key] : 0;
+                                return (
+                                    <div key={item.title} className={`spotlight-card tone-${item.tone}`}>
+                                        <div className="spotlight-title">{item.title}</div>
+                                        <div className="spotlight-icon" aria-hidden="true">{value}</div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </section>
 
                     <section id="games" className="card">
                         <h2>Available Games</h2>
                         <div className="showcase-games">
-                            {games.map((name) => (
-                                <article
-                                    key={name}
-                                    className={`promo-game-card ${selectedGame === name ? "active" : ""}`}
-                                >
-                                    <div className={`promo-game-art promo-game-art-${gameCardMeta[name]?.style || "matrix"}`}>
-                                        <img
-                                            className="promo-game-image"
-                                            src={gameCardMeta[name]?.image}
-                                            alt={gameCardMeta[name]?.title || name}
-                                        />
-                                        <div className="promo-game-scene"></div>
-                                    </div>
+                            {singleGames.map((game) => {
+                                const slug = game.slug || toSlug(game.name);
+                                const meta = gameCardMeta[slug] || {};
+                                const title = meta.title || game.name || slug;
+                                const copy = meta.copy || "Jump into this game and start playing right away.";
+                                const image = meta.image || "/web/public/tap.jpeg";
+                                const art = meta.style || "matrix";
 
-                                    <div className="promo-game-content">
-                                        <h3>{gameCardMeta[name]?.title || name}</h3>
-                                        <p>{gameCardMeta[name]?.copy || "Jump into this game and start playing right away."}</p>
-                                    </div>
+                                return (
+                                    <article
+                                        key={slug}
+                                        className={`promo-game-card ${selectedGame === slug ? "active" : ""}`}
+                                    >
+                                        <div className={`promo-game-art promo-game-art-${art}`}>
+                                            <img
+                                                className="promo-game-image"
+                                                src={image}
+                                                alt={title}
+                                            />
+                                            <div className="promo-game-scene"></div>
+                                        </div>
 
-                                    <div className="promo-game-actions">
-                                        <button
-                                            type="button"
-                                            className="promo-button promo-button-primary"
-                                            onClick={() => setSelectedGame(name)}
-                                        >
-                                            Learn more
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="promo-button promo-button-secondary"
-                                            onClick={() => {
-                                                setSelectedGame(name);
-                                                const levelToOpen = name === selectedGame ? (selectedLevel || "level1.json") : "level1.json";
-                                                goToPlay(levelToOpen, name);
-                                            }}
-                                        >
-                                            Play now
-                                        </button>
-                                    </div>
-                                </article>
-                            ))}
+                                        <div className="promo-game-content">
+                                            <h3>{title}</h3>
+                                            <p>{copy}</p>
+                                        </div>
+
+                                        <div className="promo-game-actions">
+                                            <button
+                                                type="button"
+                                                className="promo-button promo-button-primary"
+                                                onClick={() => setSelectedGame(slug)}
+                                            >
+                                                Learn more
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="promo-button promo-button-secondary"
+                                                onClick={() => {
+                                                    setSelectedGame(slug);
+                                                    const levelToOpen = slug === selectedGame ? (selectedLevel || "level1.json") : "level1.json";
+                                                    goToPlay(levelToOpen, slug);
+                                                }}
+                                            >
+                                                Play now
+                                            </button>
+                                        </div>
+                                    </article>
+                                );
+                            })}
+                            {singleGames.length === 0 ? <div className="muted">No single player games found.</div> : null}
                         </div>
                     </section>
 
                     <section id="multiplayer" className="card">
                         <h2>Multiplayer</h2>
-                        <div className="muted" style={{ marginTop: "8px" }}>
-                            Multiplayer section is ready. You can add your multiplayer games here later.
-                        </div>
+                        {multiplayerGames.length === 0 ? (
+                            <div className="muted" style={{ marginTop: "8px" }}>
+                                Multiplayer section is ready. You can add your multiplayer games here later.
+                            </div>
+                        ) : (
+                            <div className="showcase-games">
+                                {multiplayerGames.map((game) => {
+                                    const slug = game.slug || toSlug(game.name);
+                                    const meta = gameCardMeta[slug] || {};
+                                    const title = meta.title || game.name || slug;
+                                    const copy = meta.copy || "Jump into this game and start playing right away.";
+                                    const image = meta.image || "/web/public/ludo.jpeg";
+                                    const art = meta.style || "arena";
+
+                                    return (
+                                        <article
+                                            key={slug}
+                                            className="promo-game-card"
+                                        >
+                                            <div className={`promo-game-art promo-game-art-${art}`}>
+                                                <img className="promo-game-image" src={image} alt={title} />
+                                                <div className="promo-game-scene"></div>
+                                            </div>
+
+                                            <div className="promo-game-content">
+                                                <h3>{title}</h3>
+                                                <p>{copy}</p>
+                                            </div>
+
+                                            <div className="promo-game-actions">
+                                                <button
+                                                    type="button"
+                                                    className="promo-button promo-button-primary"
+                                                    onClick={() => setSelectedGame(slug)}
+                                                >
+                                                    Learn more
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="promo-button promo-button-secondary"
+                                                    onClick={() => goToPlay("flexible.json", slug)}
+                                                >
+                                                    Play now
+                                                </button>
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+                        )}
                     </section>
                 </main>
             </div>

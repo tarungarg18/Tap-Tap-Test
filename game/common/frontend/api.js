@@ -1,4 +1,4 @@
-(function registerTapTapApi(globalScope) {
+﻿(function registerTapTapApi(globalScope) {
     const TOKEN_KEY = "tap_tap_token";
     const USER_KEY = "tap_tap_user";
     const REMEMBER_KEY = "tap_tap_remember";
@@ -159,6 +159,10 @@
         return requestJson("/api/games");
     }
 
+    function getGameSummary() {
+        return requestJson("/api/games/summary");
+    }
+
     function getLevels(gameName) {
         return requestJson(`/api/games/${gameName}/levels`, { auth: true });
     }
@@ -215,6 +219,7 @@
         getMe,
         logout,
         getGames,
+        getGameSummary,
         getLevels,
         getLevelConfig,
         getFlexibleConfig,

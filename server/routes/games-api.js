@@ -1,20 +1,20 @@
-const express = require("express");
+﻿const express = require("express");
 
 const {
-    listGames,
     listLevelFiles,
     readLevelConfig,
     readFlexibleConfig,
     saveFlexibleConfig
 } = require("../services/game-service");
+const { listGamesWithModes, getGameSummary } = require("../services/game-mode-service");
 const { addLeaderboardEntry, getLeaderboard, getAllLeaderboards } = require("../services/leaderboard-service");
 const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.get("/", (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
-        const games = listGames();
+        const games = await listGamesWithModes();
         res.json({ games });
     } catch (err) {
         next(err);
@@ -26,6 +26,15 @@ router.get("/leaderboards", requireAuth, async (req, res, next) => {
         const limit = req.query.limit;
         const leaderboards = await getAllLeaderboards(limit);
         res.json({ leaderboards });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get("/summary", async (req, res, next) => {
+    try {
+        const summary = await getGameSummary();
+        res.json(summary);
     } catch (err) {
         next(err);
     }
