@@ -87,10 +87,6 @@ function DashboardPage() {
         api.navigate("/login");
     }
 
-    function scrollToFooter() {
-        document.getElementById("site-footer")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
     function runSearch(event) {
         event.preventDefault();
         const query = searchText.trim().toLowerCase();
@@ -101,8 +97,18 @@ function DashboardPage() {
             return;
         }
 
-        if (query.includes("about") || query.includes("footer") || query.includes("contact")) {
-            scrollToFooter();
+        if (query.includes("about")) {
+            api.navigate("/about");
+            return;
+        }
+
+        if (query.includes("contact")) {
+            api.navigate("/home/contact-us");
+            return;
+        }
+
+        if (query.includes("footer")) {
+            api.navigate("/home");
             return;
         }
 
@@ -140,7 +146,7 @@ function DashboardPage() {
                         Home
                     </button>
                     <button className="nav-pill active" type="button">Dashboard</button>
-                    <button className="nav-pill" type="button" onClick={scrollToFooter}>About</button>
+                    <button className="nav-pill" type="button" onClick={() => api.navigate("/about")}>About</button>
                 </div>
 
                 <div className="navbar-actions">
@@ -303,7 +309,7 @@ function DashboardPage() {
                     <div className="site-footer-links">
                         <a className="site-footer-link" href="/home">All Games</a>
                         <a className="site-footer-link" href="/dashboard">Dashboard</a>
-                        <a className="site-footer-link" href="/home">About Us</a>
+                        <a className="site-footer-link" href="/about">About Us</a>
                     </div>
                 </div>
                 <div>
@@ -316,8 +322,8 @@ function DashboardPage() {
                 <div>
                     <div className="site-footer-column-title">Privacy and Terms</div>
                     <div className="site-footer-links">
-                        <a className="site-footer-link" href="/home">Terms and Conditions</a>
-                        <a className="site-footer-link" href="/home">Privacy Policy</a>
+                        <a className="site-footer-link" href="/about">Terms and Conditions</a>
+                        <a className="site-footer-link" href="/about">Privacy Policy</a>
                     </div>
                 </div>
                 <div>

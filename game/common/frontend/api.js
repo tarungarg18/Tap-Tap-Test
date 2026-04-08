@@ -218,6 +218,14 @@
         return requestJson(`/api/dashboard/leaderboard${query}`, { auth: true });
     }
 
+    function submitContactRequest(body) {
+        return requestJson("/api/mail/contact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+    }
+
     globalScope.TapTapApi = {
         getToken,
         setToken,
@@ -240,6 +248,7 @@
         getAllLeaderboards,
         submitLeaderboard,
         getDashboard,
-        getGlobalLeaderboard
+        getGlobalLeaderboard,
+        submitContactRequest
     };
 })(window);

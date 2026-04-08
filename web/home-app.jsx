@@ -1,4 +1,4 @@
-const { useEffect, useMemo, useRef, useState } = React;
+﻿const { useEffect, useMemo, useRef, useState } = React;
 
 function getStoredTheme() {
     return localStorage.getItem("tapTapTheme") || "light";
@@ -348,6 +348,10 @@ function HomePage() {
         document.getElementById("site-footer")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    function openContactSection() {
+        api.navigate("/home/contact-us");
+    }
+
     function toggleSearchPanel() {
         setSearchOpen((value) => !value);
     }
@@ -390,7 +394,17 @@ function HomePage() {
             return;
         }
 
-        if (query.includes("about") || query.includes("footer") || query.includes("contact")) {
+        if (query.includes("contact")) {
+            api.navigate("/home/contact-us");
+            return;
+        }
+
+        if (query.includes("about")) {
+            api.navigate("/about");
+            return;
+        }
+
+        if (query.includes("footer")) {
             scrollToFooter();
             setSearchOpen(false);
             return;
@@ -471,9 +485,16 @@ function HomePage() {
                     <button
                         className="nav-pill"
                         type="button"
-                        onClick={scrollToFooter}
+                        onClick={() => api.navigate("/about")}
                     >
                         About
+                    </button>
+                    <button
+                        className="nav-pill"
+                        type="button"
+                        onClick={openContactSection}
+                    >
+                        Contact Us
                     </button>
                 </div>
 
@@ -683,6 +704,16 @@ function HomePage() {
                             <span className="menu-icon menu-icon-multiplayer"></span>
                             <span className="menu-label">Multiplayer</span>
                         </button>
+                        <button
+                            className={`showcase-menu-item ${activePanel === "contact" ? "active" : ""}`}
+                            type="button"
+                            onClick={openContactSection}
+                            aria-label="Contact Us"
+                            title="Contact Us"
+                        >
+                            <span className="menu-icon menu-icon-dashboard"></span>
+                            <span className="menu-label">Contact</span>
+                        </button>
                     </div>
 
                     <div className="showcase-profile-wrap">
@@ -836,6 +867,7 @@ function HomePage() {
                             </div>
                         )}
                     </section>
+
                 </main>
             </div>
 
@@ -847,23 +879,23 @@ function HomePage() {
                 <div>
                     <div className="site-footer-column-title">Get To Know Us</div>
                     <div className="site-footer-links">
-                        <a className="site-footer-link" href="/home">All Games</a>
-                        <a className="site-footer-link" href="/dashboard">Dashboard</a>
-                        <a className="site-footer-link" href="/home">About Us</a>
+                        <button className="site-footer-link" type="button" onClick={() => jumpToSection("games")}>All Games</button>
+                        <button className="site-footer-link" type="button" onClick={() => api.navigate("/dashboard")}>Dashboard</button>
+                        <button className="site-footer-link" type="button" onClick={() => api.navigate("/about")}>About Us</button>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Support</div>
                     <div className="site-footer-links">
-                        <a className="site-footer-link" href="/home">Contact Us</a>
-                        <a className="site-footer-link" href="/home">FAQ</a>
+                        <button className="site-footer-link" type="button" onClick={() => api.navigate("/home/contact-us")}>Contact Us</button>
+                        <button className="site-footer-link" type="button" onClick={() => api.navigate("/home/contact-us")}>FAQ</button>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Privacy and Terms</div>
                     <div className="site-footer-links">
-                        <a className="site-footer-link" href="/home">Terms and Conditions</a>
-                        <a className="site-footer-link" href="/home">Privacy Policy</a>
+                        <button className="site-footer-link" type="button" onClick={() => api.navigate("/about")}>Terms and Conditions</button>
+                        <button className="site-footer-link" type="button" onClick={() => api.navigate("/about")}>Privacy Policy</button>
                     </div>
                 </div>
                 <div>
@@ -885,3 +917,4 @@ function HomePage() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<HomePage />);
+
