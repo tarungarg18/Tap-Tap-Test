@@ -1,15 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="GH">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0b72ff"/>
-      <stop offset="100%" stop-color="#55d2ff"/>
-    </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#dff4ff"/>
+    <linearGradient id="wordmark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2f8fff"/>
+      <stop offset="100%" stop-color="#49b6ff"/>
     </linearGradient>
   </defs>
-  <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#bg)"/>
-  <path d="M18 20h28v7H35v18h-8V27H18z" fill="url(#accent)"/>
-  <circle cx="45" cy="19" r="5" fill="#8b7cff"/>
+  <rect width="64" height="64" rx="14" fill="#13233b"/>
+  <g fill="url(#wordmark)" font-family="Arial, Helvetica, sans-serif" font-weight="800" letter-spacing="-1.8">
+    <text x="10" y="41" font-size="28">GH</text>
+  </g>
 </svg>

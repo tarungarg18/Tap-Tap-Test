@@ -296,29 +296,28 @@ function DashboardPage() {
             <footer id="site-footer" className="site-footer">
                 <div className="site-footer-stack">
                     <div className="site-footer-brand">Game Hub</div>
-                    <div className="site-footer-copy">Game Hub © 2026. All rights reserved.</div>
+                    <div className="site-footer-copy">Game Hub (c) 2026. All rights reserved.</div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Get To Know Us</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">All Games</span>
-                        <span className="site-footer-link">Categories</span>
-                        <span className="site-footer-link">Progress</span>
+                        <a className="site-footer-link" href="/home">All Games</a>
+                        <a className="site-footer-link" href="/dashboard">Dashboard</a>
+                        <a className="site-footer-link" href="/home">About Us</a>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Support</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">Contact Us</span>
-                        <span className="site-footer-link">FAQ</span>
-                        <span className="site-footer-link">Resources</span>
+                        <a className="site-footer-link" href="/home">Contact Us</a>
+                        <a className="site-footer-link" href="/home">FAQ</a>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Privacy and Terms</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">Terms and Conditions</span>
-                        <span className="site-footer-link">Privacy Policy</span>
+                        <a className="site-footer-link" href="/home">Terms and Conditions</a>
+                        <a className="site-footer-link" href="/home">Privacy Policy</a>
                     </div>
                 </div>
                 <div>

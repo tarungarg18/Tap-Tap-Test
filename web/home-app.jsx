@@ -575,17 +575,9 @@ function HomePage() {
                                             <div className="profile-card-avatar">
                                                 {(user?.username || "Tap Tap").slice(0, 2).toUpperCase()}
                                             </div>
-                                            <div className="profile-card-progress">75%</div>
+                                           
                                         </div>
-                                        <div className="profile-card-top-actions">
-                                            <button
-                                                className="profile-card-edit"
-                                                type="button"
-                                                onClick={() => (window.location.href = "/dashboard")}
-                                            >
-                                                Edit Profile
-                                            </button>
-                                        </div>
+                                      
                                     </div>
 
                                     <div className="profile-card-name">{user?.username || "Tap Tap Player"}</div>
@@ -850,31 +842,28 @@ function HomePage() {
             <footer id="site-footer" className="site-footer">
                 <div className="site-footer-stack">
                     <div className="site-footer-brand">GAME HUB</div>
-                    <div className="site-footer-copy">Game Hub © 2026. All rights reserved.</div>
+                    <div className="site-footer-copy">Game Hub (c) 2026. All rights reserved.</div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Get To Know Us</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">All Games</span>
-                        <span className="site-footer-link">All Categories</span>
-                        <span className="site-footer-link">All Tags</span>
-                        <span className="site-footer-link">Blog</span>
-                        <span className="site-footer-link">About Us</span>
+                        <a className="site-footer-link" href="/home">All Games</a>
+                        <a className="site-footer-link" href="/dashboard">Dashboard</a>
+                        <a className="site-footer-link" href="/home">About Us</a>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Support</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">Contact Us</span>
-                        <span className="site-footer-link">FAQ</span>
-                        <span className="site-footer-link">DMCA</span>
+                        <a className="site-footer-link" href="/home">Contact Us</a>
+                        <a className="site-footer-link" href="/home">FAQ</a>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Privacy and Terms</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">Terms and Conditions</span>
-                        <span className="site-footer-link">Privacy Policy</span>
+                        <a className="site-footer-link" href="/home">Terms and Conditions</a>
+                        <a className="site-footer-link" href="/home">Privacy Policy</a>
                     </div>
                 </div>
                 <div>

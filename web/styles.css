@@ -228,6 +228,26 @@ a:hover {
 .site-footer-link {
     color: #f2f6ff;
     font-size: 0.88rem;
+    display: inline-block;
+    width: fit-content;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    text-decoration: none;
+    box-shadow: none;
+    transition: color 140ms ease, opacity 140ms ease;
+}
+
+.site-footer-link:hover {
+    color: #8fd1ff;
+    text-decoration: underline;
+    opacity: 1;
+}
+
+.site-footer-link:focus-visible {
+    outline: 2px solid rgba(143, 209, 255, 0.7);
+    outline-offset: 3px;
+    border-radius: 2px;
 }
 
 .site-footer-socials {
@@ -1813,7 +1833,7 @@ button:disabled {
 }
 
 .hero-shell {
-    padding: 18px;
+    padding: 14px;
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.9)),
         linear-gradient(135deg, rgba(102, 181, 255, 0.2), rgba(169, 232, 255, 0.12));
@@ -1867,16 +1887,16 @@ button:disabled {
 }
 
 .spotlight-grid {
-    margin-top: 18px;
+    margin-top: 10px;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 14px;
+    gap: 12px;
 }
 
 .spotlight-card {
-    min-height: 84px;
-    padding: 14px 20px;
-    border-radius: 26px;
+    min-height: 68px;
+    padding: 10px 18px;
+    border-radius: 22px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1888,13 +1908,13 @@ button:disabled {
 
 .spotlight-title {
     font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
-    font-size: 1rem;
+    font-size: 0.92rem;
     font-weight: 600;
     letter-spacing: -0.02em;
 }
 
 .spotlight-icon {
-    font-size: 2rem;
+    font-size: 1.8rem;
     line-height: 1;
     color: #11183d;
 }
@@ -2232,13 +2252,13 @@ button:disabled {
 }
 
 .promo-game-card {
-    padding: 20px;
+    padding: 16px;
     border-radius: 36px;
     background: #fcfdff;
     border: 1px solid rgba(216, 227, 247, 0.82);
     box-shadow: 0 26px 60px rgba(18, 33, 61, 0.12);
     display: grid;
-    gap: 18px;
+    gap: 14px;
     transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
 
@@ -2286,8 +2306,8 @@ button:disabled {
 
 .promo-game-art {
     position: relative;
-    min-height: 265px;
-    border-radius: 34px;
+    min-height: 188px;
+    border-radius: 28px;
     overflow: hidden;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
     background: none !important;
@@ -2325,29 +2345,29 @@ button:disabled {
 
 .promo-game-content h3 {
     font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
-    font-size: clamp(1.8rem, 2.2vw, 2.4rem);
+    font-size: clamp(1.55rem, 2vw, 2rem);
     line-height: 1.05;
     color: #241f72;
 }
 
 .promo-game-content p {
-    margin: 14px 0 0;
+    margin: 10px 0 0;
     color: #3d4452;
-    font-size: 1rem;
-    line-height: 1.6;
-    min-height: 96px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    min-height: 68px;
 }
 
 .promo-game-actions {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 12px;
 }
 
 .promo-button {
-    min-height: 54px;
+    min-height: 46px;
     border-radius: 999px;
-    font-size: 0.98rem;
+    font-size: 0.92rem;
     font-weight: 700;
     box-shadow: none;
 }
@@ -2518,18 +2538,25 @@ button:disabled {
 
 .game-info-grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 22px;
+    align-items: start;
 }
 
 .game-info-panel {
-    padding: 28px;
+    padding: 24px;
     border-radius: 30px;
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
-        linear-gradient(135deg, #181d31 0%, #111629 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 24px 52px rgba(5, 10, 28, 0.28);
+        radial-gradient(circle at top left, rgba(255, 132, 179, 0.18), transparent 34%),
+        radial-gradient(circle at top right, rgba(93, 168, 255, 0.18), transparent 30%),
+        linear-gradient(145deg, #1f213b 0%, #171b34 52%, #10162b 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 24px 52px rgba(5, 10, 28, 0.28);
+    display: grid;
+    gap: 16px;
+    align-content: start;
 }
 
 .game-info-section-title {
@@ -2537,52 +2564,37 @@ button:disabled {
     font-size: 1.35rem;
     font-weight: 800;
     color: #ffffff;
+    letter-spacing: -0.02em;
+    text-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
-.game-info-list {
-    margin-top: 18px;
+.game-info-card-list {
     display: grid;
-    gap: 16px;
-}
-
-.game-info-list-item {
-    display: grid;
-    grid-template-columns: 42px 1fr;
     gap: 14px;
-    align-items: start;
-    padding: 16px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.game-info-list-item:first-child {
-    padding-top: 0;
-    border-top: 0;
-}
-
-.game-info-list-item p {
     margin: 0;
-    color: rgba(239, 244, 255, 0.92);
-    line-height: 1.65;
-    font-size: 0.98rem;
+    padding-left: 24px;
 }
 
-.game-info-list-index {
-    color: #ffffff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 1.02rem;
-    background: linear-gradient(135deg, #ff7a8c 0%, #7cb7ff 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+.game-info-card-item {
+    color: rgba(239, 244, 255, 0.92);
+    line-height: 1.75;
+    font-size: 1rem;
+    list-style: disc;
+    padding-left: 6px;
+}
+
+.game-info-card-item::marker {
+    color: #d8e6ff;
+    font-size: 1rem;
 }
 
 @media (max-width: 920px) {
-    .game-info-hero,
-    .game-info-grid {
+    .game-info-hero {
         grid-template-columns: 1fr;
+    }
+
+    .game-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .game-info-art-wrap,
@@ -2606,6 +2618,14 @@ button:disabled {
     .game-info-actions .promo-button {
         width: 100%;
         min-width: 0;
+    }
+
+    .game-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-info-card-list {
+        padding-left: 22px;
     }
 }
 

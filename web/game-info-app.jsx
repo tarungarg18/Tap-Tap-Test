@@ -12,22 +12,74 @@ const GAME_DETAILS = {
         image: "/web/public/tap.jpeg",
         level: "level1.json",
         intro: "Fast, reactive, and competitive. Tap Tap is built around quick decisions, clean controls, and score chasing that keeps each round exciting.",
-        featuresTitle: "Features of Tap Tap Game",
-        howToPlayTitle: "How to Play (Simple Steps)",
-        features: [
-            "⚡ Fast-Paced Gameplay - Test your speed and reflexes.",
-            "🎯 Simple Controls - Just tap the screen to play.",
-            "📈 Increasing Difficulty - Game gets faster as you progress.",
-            "🏆 High Score Tracking - Try to beat your best score.",
-            "🎮 Addictive & Fun - Easy to learn, hard to master.",
-            "🔊 Sound Effects & Animations - Makes gameplay more engaging."
-        ],
-        howToPlay: [
-            "▶️ Start the game.",
-            "👆 Tap on the targets as they appear on the screen.",
-            "⏱️ Tap quickly before time runs out.",
-            "❌ Avoid missing taps or tapping wrong areas.",
-            "🏁 Keep playing to score higher points and beat your record."
+        learnMoreSections: [
+            {
+                title: "About Game",
+                items: [
+                    "Tap Tap is a reflex-based arcade game built around speed and precision.",
+                    "Players respond quickly to active targets that appear during the round.",
+                    "It feels simple at first, but strong performance depends on consistency."
+                ]
+            },
+            {
+                title: "Features",
+                items: [
+                    "Fast-paced gameplay that rewards sharp reactions.",
+                    "Simple tap interaction that is easy to understand.",
+                    "Score chasing that makes repeat runs fun.",
+                    "Energetic visuals and sound feedback."
+                ]
+            },
+            {
+                title: "How to Play",
+                items: [
+                    "Start the game and watch for targets to appear.",
+                    "Tap each correct target before it disappears.",
+                    "Keep your rhythm steady to maintain scoring momentum.",
+                    "Avoid missed taps and wrong inputs during the round."
+                ]
+            },
+            {
+                title: "Game Rules",
+                items: [
+                    "Only the intended active targets should be tapped.",
+                    "Wrong taps or missed targets can hurt your run.",
+                    "The pace may increase, so reaction time matters more over time."
+                ]
+            },
+            {
+                title: "Score Logic",
+                items: [
+                    "You earn points for each successful target tap.",
+                    "Better accuracy helps you build stronger total scores.",
+                    "Mistakes reduce overall scoring efficiency compared with a clean run."
+                ]
+            },
+            {
+                title: "Control",
+                items: [
+                    "Use touch input on mobile devices.",
+                    "Use the mouse to click targets on desktop.",
+                    "Fast and precise input works better than random tapping."
+                ]
+            },
+            {
+                title: "Winning Logic",
+                items: [
+                    "Tap Tap focuses on finishing with the highest score possible.",
+                    "A strong run depends on speed, control, and accuracy together.",
+                    "Winning can mean beating your best score or leading the leaderboard."
+                ]
+            },
+            {
+                title: "Strategy Tips",
+                items: [
+                    "Prioritize accuracy before trying to play faster.",
+                    "Keep your attention on the full play area, not one spot.",
+                    "Stay relaxed so your tapping remains controlled.",
+                    "Practice short sessions often to improve reaction timing."
+                ]
+            }
         ]
     },
     sudoku: {
@@ -37,21 +89,74 @@ const GAME_DETAILS = {
         image: "/web/public/suduko.jpeg",
         level: "level1.json",
         intro: "A focused logic game with neat structure and satisfying puzzle solving. Sudoku is perfect for players who enjoy pattern recognition and steady progress.",
-        featuresTitle: "Features",
-        howToPlayTitle: "How to Play",
-        features: [
-            "🧠 Brain Training Game - Improves logic and problem-solving skills",
-            "📊 Multiple Difficulty Levels - Easy to Hard modes",
-            "🖍️ Hints & Notes Option - Helps solve tricky puzzles",
-            "⏱️ Timer Mode - Track your solving time",
-            "🎯 Clean & Simple Interface - Easy to focus and play"
-        ],
-        howToPlay: [
-            "▶️ Start a new puzzle.",
-            "🔢 Fill the grid with numbers from 1 to 9.",
-            "🚫 Each number must appear only once in every row, column, and box.",
-            "💡 Use hints if you get stuck.",
-            "🏁 Complete the grid correctly to win."
+        learnMoreSections: [
+            {
+                title: "About Game",
+                items: [
+                    "Sudoku is a logic puzzle played on a 9x9 number grid.",
+                    "The challenge is solved through reasoning rather than luck.",
+                    "It helps develop concentration, pattern recognition, and patience."
+                ]
+            },
+            {
+                title: "Features",
+                items: [
+                    "Logic-driven gameplay with clear puzzle structure.",
+                    "Different challenge levels for new and experienced players.",
+                    "A clean interface that helps players stay focused.",
+                    "Helpful support tools such as notes or hints in many modes."
+                ]
+            },
+            {
+                title: "How to Play",
+                items: [
+                    "Look at the numbers already placed in the puzzle.",
+                    "Fill each empty cell with a number from 1 to 9.",
+                    "Use elimination and pattern checks to find the correct values.",
+                    "Continue until every cell is correctly completed."
+                ]
+            },
+            {
+                title: "Game Rules",
+                items: [
+                    "Each row must contain 1 to 9 exactly once.",
+                    "Each column must contain 1 to 9 exactly once.",
+                    "Each 3x3 box must also contain 1 to 9 exactly once."
+                ]
+            },
+            {
+                title: "Score Logic",
+                items: [
+                    "Sudoku performance is usually measured by completion and speed.",
+                    "Fewer mistakes often result in a better final result.",
+                    "Hints or repeated errors may lower the overall score in some versions."
+                ]
+            },
+            {
+                title: "Control",
+                items: [
+                    "Select a cell and then choose the number to place.",
+                    "Use notes mode when you want to track candidate numbers.",
+                    "Keyboard and touch input may both be supported depending on device."
+                ]
+            },
+            {
+                title: "Winning Logic",
+                items: [
+                    "You win by filling the entire grid correctly.",
+                    "Every row, column, and 3x3 box must remain valid.",
+                    "An incomplete or incorrect grid does not count as a solved puzzle."
+                ]
+            },
+            {
+                title: "Strategy Tips",
+                items: [
+                    "Start with rows, columns, or boxes that already have many numbers.",
+                    "Use elimination instead of guessing whenever possible.",
+                    "Write candidate notes to narrow choices safely.",
+                    "Recheck difficult sections after each new placement."
+                ]
+            }
         ]
     },
     "2048": {
@@ -61,21 +166,75 @@ const GAME_DETAILS = {
         image: "/web/public/2048.jpeg",
         level: "level1.json",
         intro: "Swipe, merge, and plan your next move carefully. 2048 turns simple controls into a satisfying strategy game with strong replay value.",
-        featuresTitle: "Features",
-        howToPlayTitle: "How to Play",
-        features: [
-            "🎮 Simple Swipe Gameplay - Easy controls",
-            "🔄 Addictive Mechanics - Keep merging numbers",
-            "📈 Score Tracking - Beat your highest score",
-            "🧠 Strategic Thinking - Plan your moves carefully",
-            "✨ Smooth Animations - Clean and engaging design"
-        ],
-        howToPlay: [
-            "▶️ Start the game.",
-            "⬆️ ⬇️ ⬅️ ➡️ Swipe in any direction to move tiles.",
-            "🔢 Merge tiles with the same number (2+2=4).",
-            "🚀 Keep merging to reach 2048 tile.",
-            "❌ Game ends when no moves are left."
+        learnMoreSections: [
+            {
+                title: "About Game",
+                items: [
+                    "2048 is a number-merging puzzle game played on a compact grid.",
+                    "Every swipe moves all tiles together, so each action matters.",
+                    "Success depends on planning ahead and managing board space."
+                ]
+            },
+            {
+                title: "Features",
+                items: [
+                    "Simple directional controls that feel easy to learn.",
+                    "Addictive merge mechanics with strong replay value.",
+                    "Score tracking for personal best and competitive runs.",
+                    "Strategic gameplay created by limited board space."
+                ]
+            },
+            {
+                title: "How to Play",
+                items: [
+                    "Swipe tiles up, down, left, or right.",
+                    "When matching numbers collide, they merge into one tile.",
+                    "Keep combining values to create larger numbers.",
+                    "Continue building toward the 2048 tile while preserving space."
+                ]
+            },
+            {
+                title: "Game Rules",
+                items: [
+                    "All tiles slide together in the chosen direction.",
+                    "Only tiles with the same value can merge.",
+                    "A new tile appears after each valid move.",
+                    "The game ends when no moves and no merges remain."
+                ]
+            },
+            {
+                title: "Score Logic",
+                items: [
+                    "Points are awarded when matching tiles merge.",
+                    "Higher-value merges produce higher score gains.",
+                    "Well-organized boards usually lead to better long-term scores."
+                ]
+            },
+            {
+                title: "Control",
+                items: [
+                    "Use swipe gestures on touch devices.",
+                    "Use arrow keys or directional controls on desktop when available.",
+                    "Choose directions carefully because each move affects the whole board."
+                ]
+            },
+            {
+                title: "Winning Logic",
+                items: [
+                    "The classic objective is to create the 2048 tile.",
+                    "Many players continue beyond that to chase higher values.",
+                    "If the board locks before the goal is reached, the round is lost."
+                ]
+            },
+            {
+                title: "Strategy Tips",
+                items: [
+                    "Keep your highest tile anchored in one corner.",
+                    "Avoid random swipes that break your board order.",
+                    "Try to build rows or columns in a consistent value pattern.",
+                    "Protect empty spaces so you always have room to recover."
+                ]
+            }
         ]
     },
     ludo: {
@@ -85,28 +244,109 @@ const GAME_DETAILS = {
         image: "/web/public/ludo.jpeg",
         level: "flexible.json",
         intro: "Classic board-game fun with colorful movement, race-to-home tension, and easy-to-follow turns. Ludo is designed for playful competition.",
-        featuresTitle: "Features",
-        howToPlayTitle: "How to Play",
-        features: [
-            "👥 Multiplayer Mode - Play with friends or AI",
-            "🎲 Classic Board Game - Fun and nostalgic gameplay",
-            "🎨 Colorful Design - Red, Blue, Green, Yellow players",
-            "🏆 Winning System - Race to reach home first",
-            "🔊 Sound Effects & Animations - Interactive experience"
-        ],
-        howToPlay: [
-            "▶️ Start the game and choose players.",
-            "🎲 Roll the dice to move your token.",
-            "🚪 Get a 6 to bring a token onto the board.",
-            "🔄 Move tokens according to dice numbers.",
-            "❌ Capture opponents by landing on them.",
-            "🏁 Reach the center (home) with all tokens to win."
+        learnMoreSections: [
+            {
+                title: "About Game",
+                items: [
+                    "Ludo is a classic multiplayer board game centered on racing tokens home.",
+                    "Players move colored pieces around the board using dice rolls.",
+                    "It mixes luck, timing, and tactical choices in every match."
+                ]
+            },
+            {
+                title: "Features",
+                items: [
+                    "Multiplayer-friendly gameplay for fun competition.",
+                    "Simple turn-based movement with colorful tokens.",
+                    "Classic capture mechanics that add excitement.",
+                    "Easy rules that make the game approachable for all ages."
+                ]
+            },
+            {
+                title: "How to Play",
+                items: [
+                    "Choose players and begin the match.",
+                    "Roll the dice during your turn.",
+                    "Bring tokens into play and move them along the path.",
+                    "Guide all of your tokens safely toward home."
+                ]
+            },
+            {
+                title: "Game Rules",
+                items: [
+                    "A token usually needs a 6 to leave the base.",
+                    "Tokens move according to the number rolled on the die.",
+                    "Landing on an opponent can send that token back to base unless the space is safe.",
+                    "Exact movement is often needed to enter the final home area."
+                ]
+            },
+            {
+                title: "Score Logic",
+                items: [
+                    "Ludo is mainly decided by race progress instead of heavy point scoring.",
+                    "Strong play comes from safe advancement and smart captures.",
+                    "Reaching home with more tokens faster reflects better performance."
+                ]
+            },
+            {
+                title: "Control",
+                items: [
+                    "Tap or click to roll the dice.",
+                    "Select the token you want to move after the roll.",
+                    "Use the highlighted legal move options when they appear."
+                ]
+            },
+            {
+                title: "Winning Logic",
+                items: [
+                    "You win by moving all of your tokens into home first.",
+                    "Each token must complete the full route before entering the home path.",
+                    "The first player to finish all tokens is the winner."
+                ]
+            },
+            {
+                title: "Strategy Tips",
+                items: [
+                    "Try to bring more than one token onto the board early.",
+                    "Use safe spaces wisely when opponents are close.",
+                    "Balance aggressive captures with steady progress.",
+                    "Avoid leaving key tokens exposed without a reason."
+                ]
+            }
         ]
     }
 };
 
 function normalizeGameName(value) {
     return String(value || "").trim().toLowerCase();
+}
+
+const REQUIRED_SECTION_TITLES = [
+    "About Game",
+    "Features",
+    "How to Play",
+    "Game Rules",
+    "Score Logic",
+    "Control",
+    "Winning Logic",
+    "Strategy Tips"
+];
+
+function buildLearnMoreSections(sections) {
+    const sectionMap = new Map(
+        (Array.isArray(sections) ? sections : []).map((section) => [section.title, section])
+    );
+
+    return REQUIRED_SECTION_TITLES.map((title) => {
+        const items = sectionMap.get(title)?.items;
+
+        return {
+            title,
+            items: Array.isArray(items) && items.length > 0
+                ? items
+                : ["Details will be added here soon."]
+        };
+    });
 }
 
 function getGameFromPath() {
@@ -125,20 +365,15 @@ function GameInfoPage() {
         image: "/web/public/tap.jpeg",
         level: "level1.json",
         intro: "Explore this game, learn its core mechanics, and jump in when you are ready.",
-        featuresTitle: "Features",
-        howToPlayTitle: "How to Play",
-        features: [
-            "Built to be easy to start and fun to replay.",
-            "Designed with quick access and clear controls.",
-            "A good fit for casual play sessions and score chasing."
-        ],
-        howToPlay: [
-            "Open the game and review the basic objective.",
-            "Follow the on-screen controls to begin your round.",
-            "Play a few rounds to get comfortable with the mechanics.",
-            "Keep improving your timing, strategy, or accuracy."
-        ]
+        learnMoreSections: REQUIRED_SECTION_TITLES.map((title) => ({
+            title,
+            items: ["Details will be added here soon."]
+        }))
     };
+    const learnMoreSections = useMemo(
+        () => buildLearnMoreSections(game.learnMoreSections),
+        [game.learnMoreSections]
+    );
 
     useEffect(() => {
         document.body.classList.remove("theme-light", "theme-dark");
@@ -217,58 +452,46 @@ function GameInfoPage() {
                 </section>
 
                 <section className="game-info-grid">
-                    <article className="card game-info-panel">
-                        <div className="game-info-section-title">{game.featuresTitle || "Features"}</div>
-                        <div className="game-info-list">
-                            {game.features.map((item, index) => (
-                                <div key={`${game.title}-feature-${index}`} className="game-info-list-item">
-                                    <span className="game-info-list-index">{index + 1}.</span>
-                                    <p>{item}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </article>
-
-                    <article className="card game-info-panel">
-                        <div className="game-info-section-title">{game.howToPlayTitle || "How to Play"}</div>
-                        <div className="game-info-list">
-                            {game.howToPlay.map((item, index) => (
-                                <div key={`${game.title}-how-${index}`} className="game-info-list-item">
-                                    <span className="game-info-list-index">{index + 1}.</span>
-                                    <p>{item}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </article>
+                    {learnMoreSections.map((section) => (
+                        <article key={`${game.title}-${section.title}`} className="card game-info-panel">
+                            <div className="game-info-section-title">{section.title}</div>
+                            <ul className="game-info-card-list">
+                                {section.items.map((item, index) => (
+                                    <li key={`${game.title}-${section.title}-${index}`} className="game-info-card-item">
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </article>
+                    ))}
                 </section>
             </main>
 
             <footer id="site-footer" className="site-footer">
                 <div className="site-footer-stack">
                     <div className="site-footer-brand">Game Hub</div>
-                    <div className="site-footer-copy">Game Hub © 2026. All rights reserved.</div>
+                    <div className="site-footer-copy">Game Hub (c) 2026. All rights reserved.</div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Get To Know Us</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">All Games</span>
-                        <span className="site-footer-link">Categories</span>
-                        <span className="site-footer-link">Progress</span>
+                        <a className="site-footer-link" href="/home">All Games</a>
+                        <a className="site-footer-link" href="/dashboard">Dashboard</a>
+                        <a className="site-footer-link" href="/home">About Us</a>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Support</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">Contact Us</span>
-                        <span className="site-footer-link">FAQ</span>
-                        <span className="site-footer-link">Resources</span>
+                        <a className="site-footer-link" href="/home">Contact Us</a>
+                        <a className="site-footer-link" href="/home">FAQ</a>
                     </div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Privacy and Terms</div>
                     <div className="site-footer-links">
-                        <span className="site-footer-link">Terms and Conditions</span>
-                        <span className="site-footer-link">Privacy Policy</span>
+                        <a className="site-footer-link" href="/home">Terms and Conditions</a>
+                        <a className="site-footer-link" href="/home">Privacy Policy</a>
                     </div>
                 </div>
                 <div>
