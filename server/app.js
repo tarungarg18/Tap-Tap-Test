@@ -29,6 +29,7 @@ function createApp() {
     app.get("/login", sendWebPage("login.html"));
     app.get("/signup", sendWebPage("signup.html"));
     app.get("/dashboard", sendWebPage("dashboard.html"));
+    app.get("/game-info/:gameName", sendWebPage("game-info.html"));
 
     app.get("/games/:gameName", (req, res, next) => {
         try {

@@ -1,4 +1,4 @@
-const { useEffect, useMemo, useState } = React;
+const { useEffect, useMemo, useRef, useState } = React;
 
 function getStoredTheme() {
     return localStorage.getItem("tapTapTheme") || "light";
@@ -88,6 +88,7 @@ function HomePage() {
     const [user, setUser] = useState(api.getUser());
     const [singleGames, setSingleGames] = useState([]);
     const [multiplayerGames, setMultiplayerGames] = useState([]);
+    const [allGames, setAllGames] = useState([]);
     const [selectedGame, setSelectedGame] = useState("");
     const [levels, setLevels] = useState([]);
     const [selectedLevel, setSelectedLevel] = useState("");
@@ -112,6 +113,7 @@ function HomePage() {
         multiplayerCount: 0,
         totalUsers: 0
     });
+    const menuRef = useRef(null);
 
     const userRank = user && user.globalRank != null ? user.globalRank : "NA";
     const userRankDisplay = userRank === "NA" ? "NA" : Number(userRank).toLocaleString();
@@ -121,6 +123,28 @@ function HomePage() {
     const toSlug = (value) => String(value || "").toLowerCase();
 
     const selectedGameSafe = useMemo(() => selectedGame || "", [selectedGame]);
+    const gameSuggestions = useMemo(() => {
+        const query = searchText.trim().toLowerCase();
+        if (!query) return [];
+
+        return allGames
+            .filter((game) => {
+                const name = String(game?.name || "").toLowerCase();
+                const slug = String(game?.slug || "").toLowerCase();
+                return name.includes(query) || slug.includes(query);
+            })
+            .slice(0, 6);
+    }, [allGames, searchText]);
+
+    function openGameInfo(gameName) {
+        if (!gameName) return;
+        api.navigate(`/game-info/${encodeURIComponent(gameName)}`);
+    }
+
+    function openGame(gameName) {
+        if (!gameName) return;
+        window.location.href = `/games/${encodeURIComponent(gameName)}`;
+    }
 
     useEffect(() => {
         document.body.classList.remove("theme-light", "theme-dark");
@@ -133,12 +157,13 @@ function HomePage() {
             try {
                 const token = api.getToken();
                 const requests = token
-                    ? [api.getMe().catch(() => ({ user: null })), api.getGameSummary()]
-                    : [Promise.resolve({ user: null }), api.getGameSummary()];
+                    ? [api.getMe().catch(() => ({ user: null })), api.getGameSummary(), api.getGames().catch(() => ({ games: [] }))]
+                    : [Promise.resolve({ user: null }), api.getGameSummary(), api.getGames().catch(() => ({ games: [] }))];
 
-                const [mePayload, summaryPayload] = await Promise.all(requests);
+                const [mePayload, summaryPayload, gamesPayload] = await Promise.all(requests);
 
                 setUser(mePayload?.user || null);
+                setAllGames(Array.isArray(gamesPayload?.games) ? gamesPayload.games : []);
 
                 const singleList = Array.isArray(summaryPayload?.singlePlayerGames)
                     ? summaryPayload.singlePlayerGames
@@ -211,6 +236,24 @@ function HomePage() {
 
         loadGameData();
     }, [selectedGameSafe]);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+
+        function handlePointerDown(event) {
+            if (!menuRef.current?.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handlePointerDown);
+        document.addEventListener("touchstart", handlePointerDown);
+
+        return () => {
+            document.removeEventListener("mousedown", handlePointerDown);
+            document.removeEventListener("touchstart", handlePointerDown);
+        };
+    }, [menuOpen]);
 
     function goToPlay(levelName, gameName = selectedGameSafe) {
         if (!gameName || !levelName) return;
@@ -371,6 +414,17 @@ function HomePage() {
             return;
         }
 
+        const matchedBackendGame = allGames.find((game) => {
+            const name = String(game?.name || "").toLowerCase();
+            const slug = String(game?.slug || "").toLowerCase();
+            return query === name || query === slug;
+        });
+
+        if (matchedBackendGame) {
+            openGame(matchedBackendGame.slug || matchedBackendGame.name);
+            return;
+        }
+
         if (query.includes("game") || query.includes("tap") || query.includes("sudoku") || query.includes("2048")) {
             const matchedGame = trendingGames.find((item) => {
                 const title = item.title.toLowerCase();
@@ -394,10 +448,15 @@ function HomePage() {
         <div className="page-wrap">
             <nav className="navbar">
                 <div className="navbar-brand">
-                    <div className="navbar-game-brand">
+                    <button
+                        className="navbar-game-brand"
+                        type="button"
+                        onClick={() => api.navigate("/home")}
+                        aria-label="Go to homepage"
+                    >
                         <div className="navbar-game-brand-line">GAME</div>
                         <div className="navbar-game-brand-line">HUB</div>
-                    </div>
+                    </button>
                 </div>
 
                 <div className="navbar-center">
@@ -435,6 +494,31 @@ function HomePage() {
 
                         {searchOpen ? (
                             <section className="search-panel card">
+                                {gameSuggestions.length > 0 ? (
+                                    <>
+                                        <div className="search-section-title">Games</div>
+                                        <div className="search-suggestion-list">
+                                            {gameSuggestions.map((game) => (
+                                                <button
+                                                    key={game.slug || game.name}
+                                                    type="button"
+                                                    className="search-suggestion-item"
+                                                    onClick={() => {
+                                                        setSearchText(game.name || game.slug || "");
+                                                        setSearchOpen(false);
+                                                        openGame(game.slug || game.name);
+                                                    }}
+                                                >
+                                                    <span className="search-suggestion-name">{game.name}</span>
+                                                    <span className="search-suggestion-meta">
+                                                        {(game.mode || "game").toUpperCase()}
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </>
+                                ) : null}
+
                                 <div className="search-section-title">Trending Games</div>
                                 <div className="search-games-grid">
                                     {trendingGames
@@ -447,7 +531,7 @@ function HomePage() {
                                                 onClick={() => {
                                                     setSelectedGame(toSlug(item.game));
                                                     setSearchOpen(false);
-                                                    jumpToSection("games");
+                                                    openGame(item.game);
                                                 }}
                                             >
                                                 <div className={`search-card-art ${item.tone === "2048" ? "two048" : item.tone}`}>
@@ -472,7 +556,7 @@ function HomePage() {
                         <span className={`theme-icon ${theme === "light" ? "theme-icon-moon" : "theme-icon-sun"}`}></span>
                     </button>
 
-                    <div className="nav-menu-wrap">
+                    <div className="nav-menu-wrap" ref={menuRef}>
                         <button
                             className="profile-toggle"
                             type="button"
@@ -500,14 +584,6 @@ function HomePage() {
                                                 onClick={() => (window.location.href = "/dashboard")}
                                             >
                                                 Edit Profile
-                                            </button>
-                                            <button
-                                                className="profile-card-next"
-                                                type="button"
-                                                onClick={() => (window.location.href = "/dashboard")}
-                                                aria-label="Open profile page"
-                                            >
-                                                <span className="profile-card-next-icon"></span>
                                             </button>
                                         </div>
                                     </div>
@@ -692,7 +768,7 @@ function HomePage() {
                                             <button
                                                 type="button"
                                                 className="promo-button promo-button-primary"
-                                                onClick={() => setSelectedGame(slug)}
+                                                onClick={() => openGameInfo(slug)}
                                             >
                                                 Learn more
                                             </button>
@@ -750,7 +826,7 @@ function HomePage() {
                                                 <button
                                                     type="button"
                                                     className="promo-button promo-button-primary"
-                                                    onClick={() => setSelectedGame(slug)}
+                                                    onClick={() => openGameInfo(slug)}
                                                 >
                                                     Learn more
                                                 </button>
