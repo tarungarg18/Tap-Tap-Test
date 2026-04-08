@@ -1999,11 +1999,30 @@ button:disabled {
 
 .dashboard-profile-card,
 .dashboard-recent-card {
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(217, 226, 240, 0.9);
-    box-shadow: 0 28px 60px rgba(12, 42, 88, 0.08);
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(255, 126, 154, 0.16), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(113, 190, 255, 0.18), transparent 24%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(247, 250, 255, 0.98) 48%, rgba(242, 235, 255, 0.98) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    box-shadow:
+        0 30px 80px rgba(12, 42, 88, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
     border-radius: 30px;
     padding: 28px;
+}
+
+.dashboard-profile-card::before,
+.dashboard-recent-card::before {
+    content: "";
+    position: absolute;
+    inset: auto -50px -70px auto;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 145, 174, 0.18), rgba(255, 145, 174, 0));
+    pointer-events: none;
 }
 
 .dashboard-profile-card h2,
@@ -2012,12 +2031,16 @@ button:disabled {
     font-size: clamp(1.9rem, 2.4vw, 2.4rem);
     letter-spacing: -0.04em;
     color: #151b3d;
+    position: relative;
+    z-index: 1;
 }
 
 .dashboard-email {
     margin-top: 10px;
     font-size: 0.95rem;
     color: #6e7a98;
+    position: relative;
+    z-index: 1;
 }
 
 .dashboard-kpis {
@@ -2025,10 +2048,15 @@ button:disabled {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
+    position: relative;
+    z-index: 1;
 }
 
 .kpi {
-    background: #f5f7ff;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.84), rgba(248, 242, 255, 0.82)),
+        linear-gradient(135deg, rgba(255, 123, 145, 0.06), rgba(104, 179, 255, 0.08));
+    border: 1px solid rgba(225, 231, 248, 0.92);
     border-radius: 22px;
     padding: 18px 16px;
     text-align: center;
@@ -2036,12 +2064,15 @@ button:disabled {
     display: grid;
     gap: 10px;
     justify-items: center;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.8),
+        0 18px 32px rgba(36, 63, 115, 0.08);
 }
 
 .kpi .label {
-    color: #5f6f95;
+    color: #7d8fb8;
     font-size: 0.88rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
@@ -2051,6 +2082,10 @@ button:disabled {
     font-weight: 800;
     font-size: 1.9rem;
     color: #111d47;
+    background: linear-gradient(135deg, #162454 0%, #304ea8 46%, #ff6f8b 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .list {
@@ -2062,24 +2097,29 @@ button:disabled {
 }
 
 .list-item {
-    background: #f7f9ff;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(246, 249, 255, 0.9)),
+        linear-gradient(135deg, rgba(255, 126, 154, 0.04), rgba(113, 190, 255, 0.06));
     border-radius: 20px;
     padding: 16px 18px;
     display: grid;
     grid-template-columns: 40px 1fr auto;
     gap: 16px;
     align-items: center;
+    border: 1px solid rgba(227, 233, 248, 0.92);
+    box-shadow: 0 16px 32px rgba(27, 48, 93, 0.06);
 }
 
 .list-item span:first-child {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(67, 116, 255, 0.12);
+    background: linear-gradient(135deg, rgba(115, 162, 255, 0.2), rgba(255, 126, 154, 0.18));
     color: #2444a3;
     display: grid;
     place-items: center;
     font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .list-item strong {
@@ -2091,6 +2131,8 @@ button:disabled {
     margin: 0 0 10px;
     font-size: 1rem;
     color: #2b3559;
+    position: relative;
+    z-index: 1;
 }
 
 .section-heading-row {
@@ -2098,17 +2140,20 @@ button:disabled {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    position: relative;
+    z-index: 1;
 }
 
 .recent-score-badge {
-    background: #e6efff;
-    color: #1e3c8c;
+    background: linear-gradient(135deg, rgba(116, 161, 255, 0.18), rgba(255, 132, 164, 0.18));
+    color: #294b9f;
     font-size: 0.8rem;
     font-weight: 700;
     padding: 10px 14px;
     border-radius: 999px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    border: 1px solid rgba(205, 219, 247, 0.95);
 }
 
 .dashboard-score-list .list-item {
@@ -2117,6 +2162,49 @@ button:disabled {
 
 .dashboard-score-list .muted {
     margin-top: 10px;
+}
+
+.dashboard-stats-block,
+.dashboard-score-list,
+.dashboard-pagination {
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-stats-block {
+    margin-top: 14px;
+}
+
+.dashboard-pagination {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.dashboard-pagination .promo-button {
+    min-width: 180px;
+    box-shadow: none;
+}
+
+.dashboard-pagination .promo-button-primary {
+    background: linear-gradient(135deg, #f58a9c 0%, #f07c92 100%);
+    color: #ffffff;
+}
+
+.dashboard-pagination .promo-button-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #ef748c 0%, #ea657e 100%);
+}
+
+.dashboard-pagination .promo-button-secondary {
+    background: rgba(255, 255, 255, 0.7);
+    color: #f09aaa;
+    border: 2px solid rgba(255, 155, 178, 0.9);
+}
+
+.dashboard-pagination .promo-button-secondary:hover:not(:disabled) {
+    background: rgba(255, 240, 245, 0.9);
+    color: #ea7d96;
 }
 
 .game-card {
@@ -2212,7 +2300,8 @@ button:disabled {
     height: 100%;
     object-fit: cover;
     display: block;
-    opacity: 0.6;
+    opacity: 0.9;
+    filter: saturate(1.08) contrast(1.06) brightness(1.02);
 }
 
 .promo-game-badge {
@@ -2429,7 +2518,7 @@ button:disabled {
 
 .game-info-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 22px;
 }
 
@@ -3347,11 +3436,69 @@ body.theme-dark .login-submit {
     color: var(--ink);
 }
 
+.theme-dark .dashboard-profile-card,
+.theme-dark .dashboard-recent-card {
+    background:
+        radial-gradient(circle at top left, rgba(255, 120, 150, 0.16), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(113, 190, 255, 0.14), transparent 24%),
+        linear-gradient(135deg, rgba(14, 20, 37, 0.98) 0%, rgba(19, 28, 48, 0.98) 45%, rgba(32, 20, 47, 0.98) 100%);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.theme-dark .dashboard-profile-card h2,
+.theme-dark .dashboard-recent-card h2,
+.theme-dark .dashboard-profile-card h3,
+.theme-dark .dashboard-recent-card h3,
+.theme-dark .list-item strong {
+    color: #f2f6ff;
+}
+
+.theme-dark .dashboard-email,
+.theme-dark .kpi .label {
+    color: #9fb0d4;
+}
+
 .theme-dark .list-item,
 .theme-dark .kpi,
 .theme-dark .game-card {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.08);
+}
+
+.theme-dark .kpi {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+        linear-gradient(135deg, rgba(255, 126, 154, 0.08), rgba(113, 190, 255, 0.1));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.05),
+        0 18px 32px rgba(0, 0, 0, 0.2);
+}
+
+.theme-dark .list-item {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+        linear-gradient(135deg, rgba(255, 126, 154, 0.06), rgba(113, 190, 255, 0.08));
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18);
+}
+
+.theme-dark .recent-score-badge {
+    background: linear-gradient(135deg, rgba(116, 161, 255, 0.18), rgba(255, 132, 164, 0.16));
+    color: #d8e5ff;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.theme-dark .dashboard-pagination .promo-button-secondary {
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffb6c5;
+    border-color: rgba(255, 155, 178, 0.42);
+}
+
+.theme-dark .dashboard-pagination .promo-button-secondary:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffd6df;
 }
 
 .theme-dark .promo-game-card {
@@ -3534,6 +3681,15 @@ body.theme-dark .login-submit {
     .showcase-layout,
     .showcase-layout {
         grid-template-columns: 1fr;
+    }
+
+    .dashboard-pagination {
+        justify-content: stretch;
+    }
+
+    .dashboard-pagination .promo-button {
+        min-width: 0;
+        flex: 1 1 0;
     }
 
     .menu-label {

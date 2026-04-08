@@ -16,6 +16,7 @@ function DashboardPage() {
     const [leaderboardPage, setLeaderboardPage] = useState(1);
     const [leaderboardHasNext, setLeaderboardHasNext] = useState(false);
     const [leaderboardHasPrev, setLeaderboardHasPrev] = useState(false);
+    const menuRef = useRef(null);
 
     const userRank = user && user.globalRank != null ? user.globalRank : "NA";
     const userRankDisplay = userRank === "NA" ? "NA" : Number(userRank).toLocaleString();
@@ -237,7 +238,7 @@ function DashboardPage() {
                         </div>
                     </div>
 
-                    <div style={{ marginTop: "14px" }}>
+                    <div className="dashboard-stats-block">
                         <h3>Maximum Score by Game</h3>
                         <ol className="list">
                             {stats.map((item, index) => (
@@ -269,7 +270,7 @@ function DashboardPage() {
                         ))}
                     </ol>
                     {leaderboard.length === 0 ? <div className="muted" style={{ marginTop: "8px" }}>No leaderboard entries yet.</div> : null}
-                    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "12px" }}>
+                    <div className="dashboard-pagination">
                         <button
                             type="button"
                             className="promo-button promo-button-secondary"

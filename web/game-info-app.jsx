@@ -242,6 +242,46 @@ function GameInfoPage() {
                     </article>
                 </section>
             </main>
+
+            <footer id="site-footer" className="site-footer">
+                <div className="site-footer-stack">
+                    <div className="site-footer-brand">Game Hub</div>
+                    <div className="site-footer-copy">Game Hub © 2026. All rights reserved.</div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Get To Know Us</div>
+                    <div className="site-footer-links">
+                        <span className="site-footer-link">All Games</span>
+                        <span className="site-footer-link">Categories</span>
+                        <span className="site-footer-link">Progress</span>
+                    </div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Support</div>
+                    <div className="site-footer-links">
+                        <span className="site-footer-link">Contact Us</span>
+                        <span className="site-footer-link">FAQ</span>
+                        <span className="site-footer-link">Resources</span>
+                    </div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Privacy and Terms</div>
+                    <div className="site-footer-links">
+                        <span className="site-footer-link">Terms and Conditions</span>
+                        <span className="site-footer-link">Privacy Policy</span>
+                    </div>
+                </div>
+                <div>
+                    <div className="site-footer-column-title">Follow Us</div>
+                    <div className="site-footer-socials">
+                        <span className="site-footer-social social-linkedin">in</span>
+                        <span className="site-footer-social social-tiktok">tt</span>
+                        <span className="site-footer-social social-youtube">yt</span>
+                        <span className="site-footer-social social-instagram">ig</span>
+                        <span className="site-footer-social social-facebook">f</span>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 }
