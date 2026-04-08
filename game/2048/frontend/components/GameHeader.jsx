@@ -20,9 +20,12 @@
                         disabled={loading}
                         aria-label="Select level"
                     >
-                        {levels.map((levelName) => (
-                            <option key={levelName} value={levelName}>{levelName}</option>
-                        ))}
+                        {levels.map((levelName) => {
+                            const label = levelName.replace(/\.json$/i, "");
+                            return (
+                                <option key={levelName} value={levelName}>{label}</option>
+                            );
+                        })}
                     </select>
 
                     <button onClick={onRestart} disabled={loading}>Restart</button>

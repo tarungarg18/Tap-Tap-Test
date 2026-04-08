@@ -113,6 +113,11 @@ function HomePage() {
         totalUsers: 0
     });
 
+    const userRank = user && user.globalRank != null ? user.globalRank : "NA";
+    const userRankDisplay = userRank === "NA" ? "NA" : Number(userRank).toLocaleString();
+    const userPoints = user && Number.isFinite(Number(user.totalScore)) ? Number(user.totalScore) : 0;
+    const userPointsDisplay = Number.isFinite(userPoints) ? userPoints.toLocaleString() : "0";
+
     const toSlug = (value) => String(value || "").toLowerCase();
 
     const selectedGameSafe = useMemo(() => selectedGame || "", [selectedGame]);
@@ -502,12 +507,12 @@ function HomePage() {
                                         <div className="profile-card-stat">
                                             <span className="profile-card-stat-icon trophy"></span>
                                             <span>Your Global Rank</span>
-                                            <strong>NA</strong>
+                                            <strong>{userRankDisplay}</strong>
                                         </div>
                                         <div className="profile-card-stat">
                                             <span className="profile-card-stat-icon star"></span>
                                             <span>Your Points</span>
-                                            <strong>0</strong>
+                                            <strong>{userPointsDisplay}</strong>
                                         </div>
                                     </div>
 

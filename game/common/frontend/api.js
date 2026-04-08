@@ -1,4 +1,5 @@
-﻿(function registerTapTapApi(globalScope) {
+
+(function registerTapTapApi(globalScope) {
     const TOKEN_KEY = "tap_tap_token";
     const USER_KEY = "tap_tap_user";
     const REMEMBER_KEY = "tap_tap_remember";
@@ -184,8 +185,9 @@
         });
     }
 
-    function getLeaderboard(gameName) {
-        return requestJson(`/api/games/${gameName}/leaderboard`, { auth: true });
+    function getLeaderboard(gameName, options = {}) {
+        const query = options.level ? `?level=${encodeURIComponent(options.level)}` : "";
+        return requestJson(`/api/games/${gameName}/leaderboard${query}`, { auth: true });
     }
 
     function getAllLeaderboards(limit) {
@@ -203,7 +205,12 @@
     }
 
     function getDashboard() {
-        return requestJson("/api/dashboard/me", { auth: true });
+        return requestJson("/api/dashboard/me", { auth: true }).then((result) => {
+            if (result?.user) {
+                setUser(result.user);
+            }
+            return result;
+        });
     }
 
     globalScope.TapTapApi = {
