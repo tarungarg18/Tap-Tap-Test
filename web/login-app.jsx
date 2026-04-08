@@ -27,7 +27,7 @@ function LoginPage() {
 
         api.getMe()
             .then(() => {
-                api.navigate("/dashboard", { replace: true });
+                api.navigate("/home", { replace: true });
             })
             .catch(() => {
                 api.clearSession();
@@ -47,7 +47,7 @@ function LoginPage() {
 
         try {
             await api.login({ identifier, password, remember });
-            api.navigate("/dashboard");
+            api.navigate("/home");
         } catch (err) {
             setError(err.message || "Login failed");
         } finally {

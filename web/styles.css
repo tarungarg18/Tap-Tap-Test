@@ -557,6 +557,21 @@ button:disabled {
     display: grid;
     gap: 0;
     flex: 0 0 auto;
+    width: auto;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.navbar-game-brand:hover,
+.navbar-game-brand:active,
+.navbar-game-brand:focus {
+    background: transparent;
+    box-shadow: none;
+    transform: none;
 }
 
 .navbar-game-brand-line {
@@ -564,15 +579,10 @@ button:disabled {
     font-size: 1.55rem;
     font-weight: 800;
     line-height: 0.88;
-    color: #ffffff;
+    color: #2c9eff;
     letter-spacing: -0.05em;
     text-transform: lowercase;
-    text-shadow:
-        -3px -3px 0 #2c9eff,
-        3px -3px 0 #2c9eff,
-        -3px 3px 0 #2c9eff,
-        3px 3px 0 #2c9eff,
-        0 6px 18px rgba(44, 158, 255, 0.24);
+    text-shadow: none;
 }
 
 .search-panel {
@@ -643,6 +653,49 @@ button:disabled {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
+}
+
+.search-suggestion-list {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+}
+
+.search-suggestion-item {
+    width: 100%;
+    min-width: 0;
+    padding: 14px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+}
+
+.search-suggestion-item:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: none;
+}
+
+.search-suggestion-name {
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+.search-suggestion-meta {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.84);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
 }
 
 .search-game-card {
@@ -2230,6 +2283,243 @@ button:disabled {
     color: #f54e65;
 }
 
+.game-info-layout {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    display: grid;
+    gap: 22px;
+}
+
+.game-info-hero {
+    display: grid;
+    grid-template-columns: minmax(320px, 1.2fr) minmax(260px, 0.8fr);
+    gap: 24px;
+    align-items: center;
+    padding: 28px;
+    border-radius: 34px;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at top left, rgba(255, 120, 150, 0.28), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(102, 190, 255, 0.26), transparent 24%),
+        linear-gradient(135deg, #131a2d 0%, #1a2140 42%, #23163d 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 80px rgba(5, 10, 28, 0.34);
+}
+
+.game-info-orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(8px);
+    opacity: 0.9;
+}
+
+.game-info-orb-a {
+    width: 180px;
+    height: 180px;
+    top: -48px;
+    left: -32px;
+    background: radial-gradient(circle, rgba(255, 115, 144, 0.45), rgba(255, 115, 144, 0));
+}
+
+.game-info-orb-b {
+    width: 220px;
+    height: 220px;
+    right: -68px;
+    bottom: -60px;
+    background: radial-gradient(circle, rgba(91, 169, 255, 0.4), rgba(91, 169, 255, 0));
+}
+
+.game-info-copy,
+.game-info-art-wrap {
+    position: relative;
+    z-index: 1;
+}
+
+.game-info-copy h1 {
+    margin: 12px 0 8px;
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+    font-size: clamp(2.4rem, 4vw, 4.2rem);
+    line-height: 0.96;
+    color: #ffffff;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.24);
+}
+
+.game-info-copy p {
+    margin: 18px 0 0;
+    max-width: 680px;
+    color: rgba(235, 242, 255, 0.82);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.game-info-eyebrow {
+    display: inline-flex;
+    width: fit-content;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(255, 111, 145, 0.22), rgba(255, 181, 117, 0.22));
+    color: #ffd5de;
+    font-size: 0.84rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.game-info-genre {
+    color: rgba(169, 191, 235, 0.84);
+    font-size: 0.96rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.game-info-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.game-info-actions .promo-button {
+    width: auto;
+    min-width: 180px;
+    padding-inline: 24px;
+}
+
+.game-info-actions .promo-button-primary {
+    background: linear-gradient(135deg, #ff6d86 0%, #ff8f6b 100%);
+}
+
+.game-info-actions .promo-button-primary:hover {
+    background: linear-gradient(135deg, #ff5b76 0%, #ff7a55 100%);
+}
+
+.game-info-actions .promo-button-secondary {
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffd8e2;
+    border: 1px solid rgba(255, 146, 172, 0.42);
+}
+
+.game-info-actions .promo-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.09);
+    color: #ffffff;
+}
+
+.game-info-art-wrap {
+    min-height: 320px;
+    border-radius: 28px;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 24px 44px rgba(0, 0, 0, 0.2);
+}
+
+.game-info-art {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    object-fit: cover;
+    display: block;
+}
+
+.game-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.game-info-panel {
+    padding: 28px;
+    border-radius: 30px;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+        linear-gradient(135deg, #181d31 0%, #111629 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 24px 52px rgba(5, 10, 28, 0.28);
+}
+
+.game-info-section-title {
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #ffffff;
+}
+
+.game-info-list {
+    margin-top: 18px;
+    display: grid;
+    gap: 16px;
+}
+
+.game-info-list-item {
+    display: grid;
+    grid-template-columns: 42px 1fr;
+    gap: 14px;
+    align-items: start;
+    padding: 16px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.game-info-list-item:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.game-info-list-item p {
+    margin: 0;
+    color: rgba(239, 244, 255, 0.92);
+    line-height: 1.65;
+    font-size: 0.98rem;
+}
+
+.game-info-list-index {
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.02rem;
+    background: linear-gradient(135deg, #ff7a8c 0%, #7cb7ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 920px) {
+    .game-info-hero,
+    .game-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .game-info-art-wrap,
+    .game-info-art {
+        min-height: 240px;
+    }
+}
+
+@media (max-width: 640px) {
+    .game-info-hero,
+    .game-info-panel {
+        padding: 20px;
+        border-radius: 24px;
+    }
+
+    .game-info-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .game-info-actions .promo-button {
+        width: 100%;
+        min-width: 0;
+    }
+}
+
 .auth-hero {
     background:
         linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)),
@@ -3189,6 +3479,14 @@ body.theme-dark .login-submit {
 .theme-dark .search-icon::after {
     border-color: #eef4ff;
     background: #eef4ff;
+}
+
+.theme-dark .search-icon::before {
+    box-shadow: 0 0 0 1.5px rgba(18, 33, 61, 0.92);
+}
+
+.theme-dark .search-icon::after {
+    box-shadow: 0 0 0 1.5px rgba(18, 33, 61, 0.92);
 }
 
 .theme-dark .nav-pill {

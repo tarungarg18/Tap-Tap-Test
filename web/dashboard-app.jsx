@@ -1,4 +1,4 @@
-const { useEffect, useMemo, useState } = React;
+const { useEffect, useMemo, useRef, useState } = React;
 
 function getStoredTheme() {
     return localStorage.getItem("tapTapTheme") || "light";
@@ -13,6 +13,7 @@ function DashboardPage() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [error, setError] = useState("");
+    const menuRef = useRef(null);
 
     const userRank = user && user.globalRank != null ? user.globalRank : "NA";
     const userRankDisplay = userRank === "NA" ? "NA" : Number(userRank).toLocaleString();
@@ -48,6 +49,24 @@ function DashboardPage() {
 
         loadDashboard();
     }, []);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+
+        function handlePointerDown(event) {
+            if (!menuRef.current?.contains(event.target)) {
+                setMenuOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handlePointerDown);
+        document.addEventListener("touchstart", handlePointerDown);
+
+        return () => {
+            document.removeEventListener("mousedown", handlePointerDown);
+            document.removeEventListener("touchstart", handlePointerDown);
+        };
+    }, [menuOpen]);
 
     function logout() {
         api.logout();
@@ -87,10 +106,15 @@ function DashboardPage() {
         <div className="page-wrap">
             <nav className="navbar">
                 <div className="navbar-brand">
-                    <div className="navbar-game-brand">
+                    <button
+                        className="navbar-game-brand"
+                        type="button"
+                        onClick={() => api.navigate("/home")}
+                        aria-label="Go to homepage"
+                    >
                         <div className="navbar-game-brand-line">Game</div>
                         <div className="navbar-game-brand-line">Hub</div>
-                    </div>
+                    </button>
                 </div>
 
                 <div className="navbar-center">
@@ -126,7 +150,7 @@ function DashboardPage() {
                         <span className={`theme-icon ${theme === "light" ? "theme-icon-moon" : "theme-icon-sun"}`}></span>
                     </button>
 
-                    <div className="nav-menu-wrap">
+                    <div className="nav-menu-wrap" ref={menuRef}>
                         <button
                             className="profile-toggle"
                             type="button"
@@ -153,14 +177,6 @@ function DashboardPage() {
                                             onClick={() => api.navigate("/dashboard")}
                                         >
                                             Edit Profile
-                                        </button>
-                                        <button
-                                            className="profile-card-next"
-                                            type="button"
-                                            onClick={() => api.navigate("/dashboard")}
-                                            aria-label="Open profile page"
-                                        >
-                                            <span className="profile-card-next-icon"></span>
                                         </button>
                                     </div>
                                 </div>
