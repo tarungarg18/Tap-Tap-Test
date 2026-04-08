@@ -229,8 +229,7 @@
         const showCornerHud =
             Boolean(currentColorKey) &&
             COLOR_ORDER.includes(currentColorKey) &&
-            !ended &&
-            roomPlaying;
+            !ended;
 
         return (
             <section className="card board-card">

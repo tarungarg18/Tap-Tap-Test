@@ -6,7 +6,8 @@ const { readLevelConfig } = require("../services/game-service");
 const DEFAULT_LEVEL = "level1.json";
 const DEFAULT_TURN_DURATION_SECONDS = 20;
 const MAX_TURN_DURATION_SECONDS = 90;
-const ROOM_CAPACITY = 4;
+const MIN_PLAYERS = 2;
+const MAX_PLAYERS = 4;
 
 const COLOR_SEATS = [
     { colorKey: "red", displayName: "Red", color: "#df4f4f", startIndex: 0 },
@@ -23,6 +24,19 @@ function normalizeRoomId(value) {
     return String(value || "").trim().toUpperCase();
 }
 
+function clampPlayerCount(raw) {
+    const num = Number(raw);
+    if (!Number.isInteger(num)) return MAX_PLAYERS;
+    if (num < MIN_PLAYERS) return MIN_PLAYERS;
+    if (num > MAX_PLAYERS) return MAX_PLAYERS;
+    return num;
+}
+
+function findColor(colorKey) {
+    const key = String(colorKey || "").toLowerCase();
+    return COLOR_SEATS.find((item) => item.colorKey === key) || null;
+}
+
 class LudoRoomService {
     constructor(io) {
         this.io = io;
@@ -33,20 +47,27 @@ class LudoRoomService {
     createRoom(socket, payload = {}) {
         const roomId = createRoomId();
         const levelFile = String(payload.levelFile || DEFAULT_LEVEL);
+        const playerCount = clampPlayerCount(payload.playerCount);
+
+        const seats = Array.from({ length: playerCount }, (_unused, seatIndex) => ({
+            seatIndex,
+            userId: null,
+            username: "",
+            socketId: null,
+            connected: false,
+            colorKey: null,
+            color: null,
+            displayName: null,
+            startIndex: null
+        }));
 
         const room = {
             roomId,
             levelFile,
+            playerCount,
             createdBy: socket.user.userId,
             status: "waiting",
-            seats: COLOR_SEATS.map((seat, seatIndex) => ({
-                ...seat,
-                seatIndex,
-                userId: null,
-                username: "",
-                socketId: null,
-                connected: false
-            })),
+            seats,
             game: null,
             turnDurationMs: DEFAULT_TURN_DURATION_SECONDS * 1000,
             turnDeadlineTs: null,
@@ -58,13 +79,14 @@ class LudoRoomService {
 
         this.rooms.set(roomId, room);
 
-        this.joinRoom(socket, { roomId, suppressAckError: true });
+        this.joinRoom(socket, { roomId, colorKey: payload.colorKey, suppressAckError: true });
         this.emitRoomState(room);
 
         return {
             ok: true,
             roomId,
-            status: room.status
+            status: room.status,
+            playerCount: room.playerCount
         };
     }
 
@@ -84,42 +106,56 @@ class LudoRoomService {
             this.leaveRoom(socket, { silent: true });
         }
 
+        const desiredColor = payload.colorKey ? findColor(payload.colorKey) : null;
+        if (payload.colorKey && !desiredColor) {
+            return { ok: false, error: "Invalid color selection." };
+        }
+
         const existingSeat = room.seats.find((seat) => seat.userId === socket.user.userId);
         let assignedSeat = existingSeat;
 
         if (!assignedSeat) {
+            if (this.occupiedSeats(room).length >= room.playerCount) {
+                return { ok: false, error: `Room is full (${room.playerCount} players).` };
+            }
             assignedSeat = room.seats.find((seat) => !seat.userId);
             if (!assignedSeat) {
-                return { ok: false, error: "Room already has 4 players." };
+                return { ok: false, error: "Room is full." };
             }
+        }
+
+        const takenColors = new Set(room.seats.filter((seat) => seat.userId && seat.colorKey).map((seat) => seat.colorKey));
+        const colorToUse = desiredColor && !takenColors.has(desiredColor.colorKey)
+            ? desiredColor
+            : COLOR_SEATS.find((opt) => !takenColors.has(opt.colorKey));
+
+        if (!colorToUse) {
+            return { ok: false, error: "All colors are taken." };
         }
 
         assignedSeat.userId = socket.user.userId;
         assignedSeat.username = socket.user.username;
         assignedSeat.socketId = socket.id;
         assignedSeat.connected = true;
+        assignedSeat.colorKey = colorToUse.colorKey;
+        assignedSeat.color = colorToUse.color;
+        assignedSeat.displayName = colorToUse.displayName;
+        assignedSeat.startIndex = colorToUse.startIndex;
 
         socket.join(this.roomChannel(roomId));
         this.socketToRoom.set(socket.id, roomId);
 
         const occupied = this.occupiedSeats(room).length;
 
-        if (room.status === "waiting" && occupied === ROOM_CAPACITY) {
-            this.startGame(room);
-            return {
-                ok: true,
-                roomId,
-                status: room.status
-            };
-        }
-
+        // waiting for host to start
         room.updatedAt = Date.now();
         this.emitRoomState(room);
 
         return {
             ok: true,
             roomId,
-            status: room.status
+            status: room.status,
+            playerCount: room.playerCount
         };
     }
 
@@ -143,6 +179,10 @@ class LudoRoomService {
             seat.username = "";
             seat.socketId = null;
             seat.connected = false;
+            seat.colorKey = null;
+            seat.color = null;
+            seat.displayName = null;
+            seat.startIndex = null;
         }
 
         if (room.status === "playing") {
@@ -153,7 +193,7 @@ class LudoRoomService {
             room.lastActionId += 1;
             room.lastAction = {
                 type: "PLAYER_LEFT",
-                message: "A player left. Room reset and waiting for 4 players."
+                message: "A player left. Room reset and waiting for players."
             };
         }
 
@@ -188,6 +228,20 @@ class LudoRoomService {
         const action = actionRoom.game.handleInput("roll");
 
         return this.afterAction(actionRoom, action, before.currentPlayerId);
+    }
+
+    startRoom(socket) {
+        const roomId = this.socketToRoom.get(socket.id);
+        if (!roomId) return { ok: false, error: "Join a room first." };
+        const room = this.rooms.get(roomId);
+        if (!room) return { ok: false, error: "Room not found." };
+        if (room.createdBy !== socket.user.userId) return { ok: false, error: "Only host can start." };
+        if (room.status !== "waiting") return { ok: false, error: "Game already started." };
+        if (this.occupiedSeats(room).length !== room.playerCount || !this.allSeatsColored(room)) {
+            return { ok: false, error: "Need all players seated with colors." };
+        }
+        this.startGame(room);
+        return { ok: true, roomId: room.roomId, status: room.status };
     }
 
     move(socket, payload = {}) {
@@ -246,7 +300,12 @@ class LudoRoomService {
 
     startGame(room) {
         const occupied = this.occupiedSeats(room);
-        if (occupied.length !== ROOM_CAPACITY) {
+        if (occupied.length !== room.playerCount) {
+            return;
+        }
+
+        const missingColor = occupied.some((seat) => !seat.colorKey || !findColor(seat.colorKey));
+        if (missingColor) {
             return;
         }
 
@@ -260,13 +319,13 @@ class LudoRoomService {
         const gameplay = {
             ...(config.gameplay || {}),
             tokensPerPlayer: 4,
-            players: COLOR_SEATS.map((seat) => {
-                const seatState = room.seats.find((item) => item.colorKey === seat.colorKey);
+            players: occupied.map((seat) => {
+                const color = findColor(seat.colorKey);
                 return {
                     id: seat.colorKey,
-                    name: seatState?.username || seat.displayName,
-                    color: seat.color,
-                    startIndex: seat.startIndex
+                    name: seat.username || seat.displayName || seat.colorKey,
+                    color: color?.color || seat.color || "#888",
+                    startIndex: color?.startIndex ?? 0
                 };
             })
         };
@@ -294,7 +353,7 @@ class LudoRoomService {
         room.lastActionId += 1;
         room.lastAction = {
             type: "START",
-            message: "Room is full. Match started."
+            message: "Room is ready. Match started."
         };
 
         this.resetTurnTimer(room);
@@ -385,6 +444,15 @@ class LudoRoomService {
         return room.seats.filter((seat) => Boolean(seat.userId));
     }
 
+    allSeatsColored(room) {
+        return room.seats.every((seat) => seat.userId && seat.colorKey);
+    }
+
+    availableColors(room) {
+        const used = new Set(room.seats.filter((seat) => seat.colorKey).map((seat) => seat.colorKey));
+        return COLOR_SEATS.filter((color) => !used.has(color.colorKey));
+    }
+
     roomChannel(roomId) {
         return `ludo:${roomId}`;
     }
@@ -395,6 +463,7 @@ class LudoRoomService {
             status: room.status,
             levelFile: room.levelFile,
             hostUserId: room.createdBy,
+            playerCount: room.playerCount,
             turnDurationMs: room.turnDurationMs,
             turnDeadlineTs: room.turnDeadlineTs,
             seats: room.seats.map((seat) => ({
@@ -407,6 +476,7 @@ class LudoRoomService {
                 connected: seat.connected,
                 occupied: Boolean(seat.userId)
             })),
+            availableColors: this.availableColors(room),
             gameState: room.game ? room.game.getState() : null,
             lastAction: room.lastAction,
             lastActionId: room.lastActionId,
@@ -420,4 +490,3 @@ class LudoRoomService {
 module.exports = {
     LudoRoomService
 };
-

@@ -13,6 +13,7 @@ const http = require("http");
 
 const { createApp } = require("./app");
 const { connectMongo } = require("./db/connect");
+const { attachSocketServer } = require("./realtime/socket-server");
 
 const PORT = process.env.PORT || 3000;
 
@@ -22,6 +23,7 @@ async function startServer() {
 
         const app = createApp();
         const httpServer = http.createServer(app);
+        attachSocketServer(httpServer);
 
         httpServer.listen(PORT, () => {
             console.log(`Tap-Tap web server running on http://localhost:${PORT}`);

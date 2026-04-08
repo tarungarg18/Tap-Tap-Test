@@ -87,6 +87,15 @@ function attachSocketServer(httpServer) {
             }
         });
 
+        socket.on("ludo:start", (_payload, ack) => {
+            try {
+                const response = roomService.startRoom(socket);
+                replyAck(ack, response);
+            } catch (err) {
+                replyAck(ack, { ok: false, error: err.message || "Failed to start" });
+            }
+        });
+
         socket.on("ludo:move", (payload, ack) => {
             try {
                 const response = roomService.move(socket, payload || {});

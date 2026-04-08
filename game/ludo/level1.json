@@ -1,0 +1,18 @@
+{
+  "level": "level1.json",
+  "game": {
+    "title": "Ludo"
+  },
+  "gameplay": {
+    "trackLength": 52,
+    "homeLength": 6,
+    "tokensPerPlayer": 4,
+    "dice": { "min": 1, "max": 6 },
+    "entryRoll": 6,
+    "requireSixToEnter": true,
+    "extraTurnOnSix": true,
+    "extraTurnOnCapture": true,
+    "turnDurationSeconds": 30,
+    "safeCells": [0, 8, 13, 21, 26, 34, 39, 47]
+  }
+}
