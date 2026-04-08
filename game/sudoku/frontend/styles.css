@@ -13,7 +13,11 @@
 body {
     margin: 0;
     font-family: "Segoe UI", Tahoma, sans-serif;
-    background: linear-gradient(160deg, #f8f9ff, #edf1fa);
+    background:
+        radial-gradient(circle at top left, rgba(35, 127, 255, 0.22), transparent 30%),
+        radial-gradient(circle at 85% 15%, rgba(88, 214, 255, 0.18), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(0, 110, 255, 0.14), transparent 38%),
+        linear-gradient(145deg, #f8fbff 0%, #edf3ff 55%, #dde7fb 100%);
     color: var(--ink);
 }
 
@@ -104,9 +108,11 @@ button:disabled { opacity: 0.6; cursor: default; }
     text-align: center;
     font-weight: 600;
     background: #fff;
+    cursor: pointer;
 }
 
 .board td.prefilled { background: #eef2ff; }
+.board td.selected { outline: 2px solid #3f5bdb; outline-offset: -2px; box-shadow: inset 0 0 0 2px rgba(63,91,219,0.25); }
 
 .form {
     margin-top: 12px;
@@ -295,3 +301,42 @@ button:disabled { opacity: 0.6; cursor: default; }
 .board td:hover { background: #e8eeff; transform: scale(1.02); }
 .card { transition: transform 160ms ease, box-shadow 160ms ease; }
 .card:hover { transform: translateY(-2px); }
+
+.page-nav {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.brand-mark {
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #0b72ff;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.avatar-wrap { position: relative; cursor: pointer; }
+.avatar-ring { position: relative; width: 46px; height: 46px; border-radius: 50%; padding: 2px; background: linear-gradient(145deg, #7fb6ff, #5b8bff); box-shadow: 0 6px 16px rgba(22,73,140,0.28); }
+.avatar-photo { width: 100%; height: 100%; border-radius: 50%; background-size: cover; background-position: center; border: 2px solid #fff; }
+.avatar-initial { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; color: #143164; mix-blend-mode: multiply; }
+.avatar-menu { position: absolute; right: 0; top: 54px; min-width: 180px; background: #fff; border-radius: 12px; box-shadow: 0 18px 42px rgba(15,41,95,0.18); padding: 12px; display: grid; gap: 8px; z-index: 20; }
+.avatar-name { font-weight: 700; }
+.avatar-email { color: var(--muted); font-size: 0.9rem; }
+.danger { background: #f05d5d; color: #fff; border: none; }
+
+.custom-form {
+    display: grid;
+    gap: 12px;
+}
+.field {
+    display: grid;
+    gap: 6px;
+    color: var(--muted);
+}

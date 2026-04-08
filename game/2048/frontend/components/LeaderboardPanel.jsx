@@ -1,7 +1,7 @@
 (function registerLeaderboardPanel(globalScope) {
     const ns = globalScope.TapTap2048Components = globalScope.TapTap2048Components || {};
 
-    ns.LeaderboardPanel = function LeaderboardPanel({ leaderboard }) {
+    ns.LeaderboardPanel = function LeaderboardPanel({ leaderboard, levelLabel }) {
         const Panel = ns.Panel;
 
         function renderStars(score) {
@@ -13,18 +13,19 @@
 
         return (
             <Panel className="leaderboard">
-                <h2>Leaderboard</h2>
+                <h2>{levelLabel ? `${levelLabel} Leaderboard` : "Leaderboard"}</h2>
                 <ol className="leaderboard-list">
                     {leaderboard.map((entry, index) => (
-                        <li key={`${entry.username}-${entry.updatedAt}-${index}`} className="leaderboard-item">
+                        <li key={`${entry.username}-${entry.updatedAt || index}`} className="leaderboard-item">
                             <div className={`leaderboard-rank rank-${Math.min(index + 1, 4)}`}>
-                                {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                                {index + 1}
                             </div>
                             <div className="leaderboard-player">
                                 <div className="leaderboard-avatar">{entry.username?.charAt(0)?.toUpperCase() || "?"}</div>
                                 <div className="leaderboard-player-info">
                                     <div className="player-name">{entry.username}</div>
                                     <div className="player-stars">{renderStars(entry.score)}</div>
+                                    {entry.level ? <div className="player-level">Level: {entry.level}</div> : null}
                                 </div>
                             </div>
                             <div className="leaderboard-score">{entry.score}</div>

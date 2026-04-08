@@ -1,9 +1,21 @@
-(function registerGameBoard(globalScope) {
+﻿(function registerGameBoard(globalScope) {
     const ns = globalScope.TapTap2048Components = globalScope.TapTap2048Components || {};
 
-    ns.GameBoard = function GameBoard({ board, boardSize }) {
+    ns.GameBoard = function GameBoard({ board, boardSize, availableWidth = 520 }) {
+        const gapSize = boardSize >= 7 ? 8 : 10;
+        const maxBoardWidth = Math.max(280, Math.min(availableWidth - 12, 560));
+        const cellSize = Math.max(
+            34,
+            Math.min(64, Math.floor((maxBoardWidth - gapSize * (boardSize - 1)) / (boardSize || 1)))
+        );
+        const boardPixelWidth = boardSize * cellSize + gapSize * (boardSize - 1);
+
         const boardStyle = {
-            gridTemplateColumns: `repeat(${boardSize}, minmax(60px, 1fr))`
+            gridTemplateColumns: `repeat(${boardSize}, ${cellSize}px)`,
+            gridAutoRows: `${cellSize}px`,
+            gap: `${gapSize}px`,
+            width: `${boardPixelWidth}px`,
+            maxWidth: "100%"
         };
 
         return (

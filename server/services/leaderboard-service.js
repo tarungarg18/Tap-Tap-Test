@@ -1,8 +1,10 @@
+
 const GameStat = require("../models/GameStat");
 const ScoreEntry = require("../models/ScoreEntry");
 const { listGames } = require("./game-service");
 const { createHttpError } = require("../utils/errors");
-const { isSafeName } = require("../utils/validators");
+const { isSafeName, isSafeLevelFile } = require("../utils/validators");
+const { recalcUserLeaderboard } = require("./user-leaderboard-service");
 
 function normalizeGameName(gameName) {
     return String(gameName || "").toLowerCase();
@@ -14,6 +16,18 @@ function assertGameName(gameName) {
     }
 }
 
+function normalizeLevel(level) {
+    const raw = String(level || "").trim();
+    if (!raw) return "unknown";
+
+    const base = raw.replace(/\.json$/i, "");
+    const safe = isSafeLevelFile(raw) || isSafeName(base);
+    if (!safe) {
+        throw createHttpError(400, "Invalid level name");
+    }
+    return base.toLowerCase();
+}
+
 function normalizeScorePayload(payload) {
     const numericScore = Number(payload?.score);
     const score = Number.isFinite(numericScore) ? Math.floor(numericScore) : 0;
@@ -22,22 +36,30 @@ function normalizeScorePayload(payload) {
         ? payload.reason.trim().slice(0, 32)
         : "FINISHED";
 
-    const level = typeof payload?.level === "string" && payload.level.trim().length > 0
-        ? payload.level.trim().slice(0, 64)
+    const levelRaw = typeof payload?.level === "string" && payload.level.trim().length > 0
+        ? payload.level
         : "unknown";
+
+    const level = normalizeLevel(levelRaw);
 
     return { score, reason, level };
 }
 
-async function getLeaderboard(gameName, limit = 10) {
+async function getLeaderboard(gameName, options = {}) {
     assertGameName(gameName);
 
     const normalized = normalizeGameName(gameName);
-    const cap = Math.max(1, Math.min(100, Number(limit) || 10));
+    const cap = Math.max(1, Math.min(100, Number(options.limit) || 10));
+    const levelFilter = options.level ? normalizeLevel(options.level) : null;
 
-    const leaderboard = await GameStat.aggregate([
-        { $match: { gameName: normalized } },
-        { $sort: { maxScore: -1, updatedAt: 1 } },
+    const matchStage = { gameName: normalized };
+    if (levelFilter) {
+        matchStage.level = { $in: [levelFilter, `${levelFilter}.json`] };
+    }
+
+    const leaderboard = await ScoreEntry.aggregate([
+        { $match: matchStage },
+        { $sort: { score: -1, createdAt: 1 } },
         { $limit: cap },
         {
             $lookup: {
@@ -53,8 +75,10 @@ async function getLeaderboard(gameName, limit = 10) {
                 _id: 0,
                 userId: "$user._id",
                 username: "$user.username",
-                score: "$maxScore",
-                updatedAt: 1
+                score: "$score",
+                level: "$level",
+                updatedAt: 1,
+                createdAt: 1
             }
         }
     ]);
@@ -63,14 +87,16 @@ async function getLeaderboard(gameName, limit = 10) {
         userId: String(item.userId),
         username: item.username,
         score: item.score,
-        updatedAt: item.updatedAt
+        level: item.level,
+        updatedAt: item.updatedAt,
+        createdAt: item.createdAt
     }));
 }
 
 async function getAllLeaderboards(limit = 10) {
     const games = listGames();
     const entries = await Promise.all(
-        games.map(async ({ name }) => [name, await getLeaderboard(name, limit)])
+        games.map(async ({ name }) => [name, await getLeaderboard(name, { limit })])
     );
     return Object.fromEntries(entries);
 }
@@ -85,36 +111,39 @@ async function addLeaderboardEntry(gameName, payload, userId) {
     const normalizedGame = normalizeGameName(gameName);
     const { score, reason, level } = normalizeScorePayload(payload || {});
 
-    const existing = await GameStat.findOne({ user: userId, gameName: normalizedGame }).lean();
-    const currentBest = existing ? existing.maxScore : null;
+    const match = { user: userId, gameName: normalizedGame, level };
+    const existing = await ScoreEntry.findOne(match).lean();
 
-    if (currentBest !== null && score <= currentBest) {
-        const leaderboard = await getLeaderboard(normalizedGame, 10);
-        return { success: true, improved: false, leaderboard };
+    if (existing && score <= existing.score) {
+        const leaderboard = await getLeaderboard(normalizedGame, { level, limit: 20 });
+        const globalLeaderboard = await getLeaderboard(normalizedGame, { limit: 20 });
+        const userLeaderboard = await recalcUserLeaderboard(userId);
+        return { success: true, improved: false, leaderboard, globalLeaderboard, userLeaderboard };
     }
 
-    await ScoreEntry.create({
-        user: userId,
-        gameName: normalizedGame,
-        level,
-        score,
-        reason
-    });
-
-    await GameStat.findOneAndUpdate(
-        { user: userId, gameName: normalizedGame },
-        {
-            $set: { maxScore: score, gameName: normalizedGame, user: userId }
-        },
-        {
-            new: true,
-            upsert: true,
-            setDefaultsOnInsert: true
+    if (existing) {
+        if (score > existing.score) {
+            const now = new Date();
+            await ScoreEntry.updateOne(match, { $set: { score, reason, createdAt: now, updatedAt: now } });
         }
-    );
+    } else {
+        await ScoreEntry.create({ user: userId, gameName: normalizedGame, level, score, reason });
+    }
 
-    const leaderboard = await getLeaderboard(normalizedGame, 10);
-    return { success: true, improved: true, leaderboard };
+    const bestGameStat = await GameStat.findOne({ user: userId, gameName: normalizedGame }).lean();
+    if (!bestGameStat || score > bestGameStat.maxScore) {
+        await GameStat.findOneAndUpdate(
+            { user: userId, gameName: normalizedGame },
+            { $set: { maxScore: score, gameName: normalizedGame, user: userId } },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
+    }
+
+    const leaderboard = await getLeaderboard(normalizedGame, { level, limit: 20 });
+    const globalLeaderboard = await getLeaderboard(normalizedGame, { limit: 20 });
+    const userLeaderboard = await recalcUserLeaderboard(userId);
+
+    return { success: true, improved: true, leaderboard, globalLeaderboard, userLeaderboard };
 }
 
 module.exports = {

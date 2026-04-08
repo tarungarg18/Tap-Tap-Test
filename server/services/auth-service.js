@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const { createHttpError } = require("../utils/errors");
 const { sendSignupWelcomeMail } = require("./mail-service");
+const { getUserLeaderboard } = require("./user-leaderboard-service");
 
 const SALT_ROUNDS = 10;
 
@@ -42,6 +43,23 @@ function parseAuthToken(token) {
     return jwt.verify(token, getJwtSecret());
 }
 
+async function buildUserPayload(userDoc, options = {}) {
+    if (!userDoc) {
+        throw createHttpError(404, "User not found");
+    }
+
+    const leaderboard = await getUserLeaderboard(userDoc._id, { recalc: options.recalcLeaderboard });
+
+    return {
+        id: String(userDoc._id),
+        username: userDoc.username,
+        email: userDoc.email,
+        createdAt: userDoc.createdAt,
+        totalScore: leaderboard.totalScore,
+        globalRank: leaderboard.globalRank
+    };
+}
+
 async function signup({ username, email, password }) {
     const normalizedUsername = sanitizeIdentifier(username);
     const normalizedEmail = sanitizeIdentifier(email);
@@ -78,14 +96,11 @@ async function signup({ username, email, password }) {
     });
 
     const token = signAuthToken(user);
+    const userPayload = await buildUserPayload(user, { recalcLeaderboard: true });
 
     const payload = {
         token,
-        user: {
-            id: String(user._id),
-            username: user.username,
-            email: user.email
-        }
+        user: userPayload
     };
 
     void sendSignupWelcomeMail({
@@ -120,14 +135,11 @@ async function login({ identifier, password }) {
     }
 
     const token = signAuthToken(user);
+    const userPayload = await buildUserPayload(user, { recalcLeaderboard: true });
 
     return {
         token,
-        user: {
-            id: String(user._id),
-            username: user.username,
-            email: user.email
-        }
+        user: userPayload
     };
 }
 
@@ -138,12 +150,9 @@ async function getMe(userId) {
         throw createHttpError(404, "User not found");
     }
 
-    return {
-        id: String(user._id),
-        username: user.username,
-        email: user.email,
-        createdAt: user.createdAt
-    };
+    const userPayload = await buildUserPayload(user, { recalcLeaderboard: false });
+
+    return userPayload;
 }
 
 module.exports = {

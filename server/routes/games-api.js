@@ -1,3 +1,4 @@
+
 const express = require("express");
 
 const {
@@ -83,8 +84,9 @@ router.put("/:gameName/flexible", requireAuth, (req, res, next) => {
 router.get("/:gameName/leaderboard", requireAuth, async (req, res, next) => {
     try {
         const { gameName } = req.params;
-        const leaderboard = await getLeaderboard(gameName);
-        res.json({ game: gameName, leaderboard });
+        const level = req.query.level;
+        const leaderboard = await getLeaderboard(gameName, { level });
+        res.json({ game: gameName, level: level || null, leaderboard });
     } catch (err) {
         next(err);
     }
