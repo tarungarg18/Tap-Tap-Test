@@ -66,8 +66,7 @@ async function sendSignupWelcomeMail({ to, username, passwordPlain }) {
         text,
         html
     });
-
-    console.info(`Tap-Tap: signup welcome email sent to ${to} (username: ${username})`);
+    
     return { sent: true };
 }
 
