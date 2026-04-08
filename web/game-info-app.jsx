@@ -82,84 +82,84 @@ const GAME_DETAILS = {
             }
         ]
     },
-    sudoku: {
+    "sudoku": {
         title: "Sudoku",
-        eyebrow: "Mind Challenge",
-        genre: "Puzzle / Brain Game",
+        eyebrow: "Logic Puzzle",
+        genre: "Brain / Strategy",
         image: "/web/public/suduko.jpeg",
         level: "level1.json",
-        intro: "A focused logic game with neat structure and satisfying puzzle solving. Sudoku is perfect for players who enjoy pattern recognition and steady progress.",
+        intro: "Classic 9x9 number puzzle that trains logic, focus, and patience with simple rules and endless variety.",
         learnMoreSections: [
             {
                 title: "About Game",
                 items: [
-                    "Sudoku is a logic puzzle played on a 9x9 number grid.",
-                    "The challenge is solved through reasoning rather than luck.",
-                    "It helps develop concentration, pattern recognition, and patience."
+                    "Classic number puzzle played on a 9x9 grid.",
+                    "Improves logic, focus, and problem-solving skills.",
+                    "Perfect balance of relaxation and challenge."
                 ]
             },
             {
                 title: "Features",
                 items: [
-                    "Logic-driven gameplay with clear puzzle structure.",
-                    "Different challenge levels for new and experienced players.",
-                    "A clean interface that helps players stay focused.",
-                    "Helpful support tools such as notes or hints in many modes."
+                    "Multiple difficulty levels from easy to hard.",
+                    "Notes and hints to help solve tricky spots.",
+                    "Timer mode to track your performance.",
+                    "Clean UI for distraction-free gameplay."
                 ]
             },
             {
                 title: "How to Play",
                 items: [
-                    "Look at the numbers already placed in the puzzle.",
-                    "Fill each empty cell with a number from 1 to 9.",
-                    "Use elimination and pattern checks to find the correct values.",
-                    "Continue until every cell is correctly completed."
+                    "Start a new puzzle.",
+                    "Fill numbers from 1 to 9 in empty cells.",
+                    "Avoid repeating numbers in rows, columns, or boxes.",
+                    "Complete the grid correctly to win."
                 ]
             },
             {
                 title: "Game Rules",
                 items: [
-                    "Each row must contain 1 to 9 exactly once.",
-                    "Each column must contain 1 to 9 exactly once.",
-                    "Each 3x3 box must also contain 1 to 9 exactly once."
+                    "Grid is divided into 9 rows, 9 columns, and 3x3 boxes.",
+                    "Each number (19) appears only once per row.",
+                    "Each number appears only once per column.",
+                    "Each number appears only once per 3x3 box."
                 ]
             },
             {
                 title: "Score Logic",
                 items: [
-                    "Sudoku performance is usually measured by completion and speed.",
-                    "Fewer mistakes often result in a better final result.",
-                    "Hints or repeated errors may lower the overall score in some versions."
+                    "Faster solving gives better scores.",
+                    "Using hints may reduce your score.",
+                    "Mistakes can add penalties (if enabled)."
                 ]
             },
             {
                 title: "Control",
                 items: [
-                    "Select a cell and then choose the number to place.",
-                    "Use notes mode when you want to track candidate numbers.",
-                    "Keyboard and touch input may both be supported depending on device."
+                    "Tap cells to select and fill numbers on mobile.",
+                    "Use keyboard input on desktop for quick entry.",
+                    "Switch to notes mode to record possibilities."
                 ]
             },
             {
                 title: "Winning Logic",
                 items: [
-                    "You win by filling the entire grid correctly.",
-                    "Every row, column, and 3x3 box must remain valid.",
-                    "An incomplete or incorrect grid does not count as a solved puzzle."
+                    "Fill the entire grid correctly with no conflicts.",
+                    "Follow all row, column, and box rules.",
+                    "Complete faster for a higher ranking."
                 ]
             },
             {
                 title: "Strategy Tips",
                 items: [
-                    "Start with rows, columns, or boxes that already have many numbers.",
-                    "Use elimination instead of guessing whenever possible.",
-                    "Write candidate notes to narrow choices safely.",
-                    "Recheck difficult sections after each new placement."
+                    "Scan rows and columns carefully before placing numbers.",
+                    "Focus on one 3x3 box at a time.",
+                    "Use notes to narrow down choices.",
+                    "Avoid guessing lean on logic first."
                 ]
             }
         ]
-    },
-    "2048": {
+    },    "2048": {
         title: "2048",
         eyebrow: "Number Merge",
         genre: "Strategy / Puzzle",
@@ -511,3 +511,4 @@ function GameInfoPage() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<GameInfoPage />);
+
