@@ -1,4 +1,4 @@
-﻿(function registerTapTapApi(globalScope) {
+(function registerTapTapApi(globalScope) {
     const TOKEN_KEY = "tap_tap_token";
     const USER_KEY = "tap_tap_user";
     const REMEMBER_KEY = "tap_tap_remember";

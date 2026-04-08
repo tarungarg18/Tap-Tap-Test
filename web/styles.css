@@ -778,7 +778,8 @@ button:disabled {
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    flex: 0 1 auto;
     position: relative;
     overflow: visible;
 }
@@ -812,8 +813,8 @@ button:disabled {
 }
 
 .navbar-search-trigger {
-    width: 100%;
-    min-width: 0;
+    width: min(420px, 32vw);
+    min-width: 260px;
     height: 54px;
     padding: 0 18px 0 20px;
     border-radius: 999px;

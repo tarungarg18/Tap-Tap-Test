@@ -27,7 +27,7 @@ function LoginPage() {
 
         api.getMe()
             .then(() => {
-                api.navigate("/home", { replace: true });
+                api.navigate("/dashboard", { replace: true });
             })
             .catch(() => {
                 api.clearSession();
@@ -47,7 +47,7 @@ function LoginPage() {
 
         try {
             await api.login({ identifier, password, remember });
-            api.navigate("/home");
+            api.navigate("/dashboard");
         } catch (err) {
             setError(err.message || "Login failed");
         } finally {
@@ -94,7 +94,7 @@ function LoginPage() {
     return (
         <div className="page-wrap auth-page-stack auth-page-grid login-page">
             <div className="login-hero-card card login-hero-title-card">
-                <div className="hero-eyebrow">WELCOME TO GAME HUB</div>
+                <div className="hero-eyebrow">WELCOME TO  GAMEHUB</div>
                 <p className="hero-text">Your Next Game Starts Here</p>
               
             </div>

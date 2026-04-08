@@ -397,8 +397,20 @@ function HomePage() {
 
                 <div className="navbar-center">
                     <button className="nav-pill active" type="button">Home</button>
-                   
-                   
+                    <button
+                        className="nav-pill"
+                        type="button"
+                        onClick={() => api.navigate("/dashboard")}
+                    >
+                        Dashboard
+                    </button>
+                    <button
+                        className="nav-pill"
+                        type="button"
+                        onClick={scrollToFooter}
+                    >
+                        About
+                    </button>
                 </div>
 
                 <div className="navbar-actions">
@@ -515,7 +527,7 @@ function HomePage() {
                                 </div>
                             ) : (
                                 <div className="nav-dropdown">
-                                    <div className="nav-dropdown-title">Tap Tap</div>
+                                    <div className="nav-dropdown-title">Guest</div>
                                     <button
                                         className="profile-card-link"
                                         type="button"

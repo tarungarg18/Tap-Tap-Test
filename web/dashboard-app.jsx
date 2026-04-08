@@ -83,8 +83,8 @@ function DashboardPage() {
             <nav className="navbar">
                 <div className="navbar-brand">
                     <div className="navbar-game-brand">
-                        <div className="navbar-game-brand-line">Tap Tap</div>
-                        <div className="navbar-game-brand-line">games</div>
+                        <div className="navbar-game-brand-line">Game</div>
+                        <div className="navbar-game-brand-line">Hub</div>
                     </div>
                 </div>
 
@@ -243,8 +243,8 @@ function DashboardPage() {
 
             <footer id="site-footer" className="site-footer">
                 <div className="site-footer-stack">
-                    <div className="site-footer-brand">Tap Tap games</div>
-                    <div className="site-footer-copy">Tap Tap © 2026. All rights reserved.</div>
+                    <div className="site-footer-brand">Game Hub</div>
+                    <div className="site-footer-copy">Game Hub © 2026. All rights reserved.</div>
                 </div>
                 <div>
                     <div className="site-footer-column-title">Get To Know Us</div>
