@@ -1,6 +1,7 @@
-const { useCallback, useEffect, useRef, useState } = React;
+const { useCallback, useEffect, useMemo, useRef, useState } = React;
 
 const GAME_NAME = "sudoku";
+const FLEX_LEVEL = "flexible.json";
 const DUMMY_AVATAR =
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='1' y1='0' y2='1'%3E%3Cstop offset='0%' stop-color='%23b3d4ff'/%3E%3Cstop offset='100%' stop-color='%238bb0ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='60' fill='url(%23a)'/%3E%3Ccircle cx='60' cy='46' r='24' fill='%23f6fbff'/%3E%3Cpath d='M24 104c6-18 19-30 36-30s30 12 36 30' fill='%23f6fbff'/%3E%3C/svg%3E";
 
@@ -8,18 +9,14 @@ function cleanLevelName(levelFile) {
     return String(levelFile || "").replace(/\.json$/i, "");
 }
 
-function emptyBoard() {
-    return Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0));
+function emptyBoard(size = 9) {
+    return Array.from({ length: size }, () => Array.from({ length: size }, () => 0));
 }
 
 function generateFlexiblePuzzle(size) {
-    // Build a Latin-square style solution that satisfies row/col uniqueness.
     const nums = Array.from({ length: size }, (_, i) => i + 1);
-    const solution = Array.from({ length: size }, (_, r) =>
-        nums.map((_, c) => nums[(c + r) % size])
-    );
+    const solution = Array.from({ length: size }, (_, r) => nums.map((_, c) => nums[(c + r) % size]));
 
-    // Shuffle rows and columns for randomness
     for (let i = 0; i < size; i++) {
         const r1 = Math.floor(Math.random() * size);
         const r2 = Math.floor(Math.random() * size);
@@ -33,7 +30,6 @@ function generateFlexiblePuzzle(size) {
         }
     }
 
-    // Remove roughly half the cells to create the playable puzzle
     const board = solution.map((row) => row.map((val) => (Math.random() < 0.45 ? val : 0)));
     return { board, solution };
 }
@@ -56,6 +52,11 @@ function defaultSnapshot() {
     };
 }
 
+function computeCellSize(gridSize) {
+    const size = Math.max(3, Number(gridSize) || 9);
+    return Math.max(28, Math.min(60, Math.floor(420 / size)));
+}
+
 function App() {
     const api = window.TapTapApi;
     const engineRef = useRef(null);
@@ -69,15 +70,14 @@ function App() {
     const [statusText, setStatusText] = useState("Fill puzzle using row, col, value");
     const [errorText, setErrorText] = useState("");
     const [loading, setLoading] = useState(false);
-    const [gridSizerOpen, setGridSizerOpen] = useState(false);
-    const [cellSizeInput, setCellSizeInput] = useState("40");
     const [cellSize, setCellSize] = useState(40);
     const [showCustomModal, setShowCustomModal] = useState(false);
-    const [customSettings, setCustomSettings] = useState({ gridSize: 9, timer: 180 });
+    const [customSettings, setCustomSettings] = useState({ gridSize: 9 });
     const [avatarOpen, setAvatarOpen] = useState(false);
     const [selectedCell, setSelectedCell] = useState(null);
-
     const [form, setForm] = useState({ r: "", c: "", v: "" });
+
+    const levelLabel = useMemo(() => cleanLevelName(selectedLevel), [selectedLevel]);
 
     const stopEngine = useCallback(() => {
         if (engineRef.current) {
@@ -102,7 +102,7 @@ function App() {
     function renderLeaderboardStars(score) {
         const starCount = Math.min(5, Math.max(1, Math.round((score || 0) / 700)));
         return Array.from({ length: starCount }, (_, index) => (
-            <span key={index} className="leaderboard-star">?</span>
+            <span key={index} className="leaderboard-star">*</span>
         ));
     }
 
@@ -139,25 +139,24 @@ function App() {
         try {
             const config = await api.getLevelConfig(GAME_NAME, levelFile);
             const merged = { ...config };
-            if (overrides) {
-                const timer = Math.max(30, Number(overrides.timer) || config.timer?.limit || 120);
-                merged.timer = { ...(config.timer || {}), limit: timer };
-                const visualCell = Math.max(32, Math.min(70, Number(overrides.gridSize) * 8 || cellSize));
-                setCellSize(visualCell);
 
+            if (overrides) {
                 if (overrides.board && overrides.solution) {
                     merged.board = overrides.board;
                     merged.solution = overrides.solution;
                     merged.gridSize = overrides.gridSize || overrides.board.length;
                 }
-
                 if (overrides.gridSize) {
                     merged.game = { ...(merged.game || {}), title: `Sudoku ${overrides.gridSize}x${overrides.gridSize}` };
                 }
             }
 
+            const effectiveGrid = merged.gridSize || merged.board?.length || 9;
+            setCellSize(computeCellSize(effectiveGrid));
+
             stopEngine();
             submitLockRef.current = false;
+            setSnapshot(defaultSnapshot());
 
             const game = new window.SudokuGame(merged);
             const engine = new window.GameEngine(merged, {
@@ -181,7 +180,7 @@ function App() {
         } finally {
             setLoading(false);
         }
-    }, [api, stopEngine, loadLeaderboard, user, cellSize]);
+    }, [api, stopEngine, loadLeaderboard, user]);
 
     useEffect(() => {
         if (!api.requireAuth("/login")) return;
@@ -223,10 +222,13 @@ function App() {
         };
     }, [api, loadLeaderboard, stopEngine]);
 
+    // keep URL in sync so refresh preserves selection
     useEffect(() => {
         if (!selectedLevel) return;
-        loadLeaderboard(selectedLevel);
-    }, [selectedLevel, loadLeaderboard]);
+        const url = new URL(window.location.href);
+        url.searchParams.set("level", selectedLevel);
+        window.history.replaceState({}, "", url.toString());
+    }, [selectedLevel]);
 
     useEffect(() => {
         if (!selectedLevel) return;
@@ -237,13 +239,17 @@ function App() {
         startLevel(selectedLevel);
     }, [selectedLevel, startLevel]);
 
+    useEffect(() => {
+        if (!selectedLevel) return;
+        loadLeaderboard(selectedLevel);
+    }, [selectedLevel, loadLeaderboard]);
+
     function updateForm(field, value) {
         setForm((prev) => ({ ...prev, [field]: value }));
     }
 
     function applyMove(event) {
         event?.preventDefault?.();
-
         if (!engineRef.current || snapshot.ended) return;
 
         const separator = snapshot.config?.input?.separator;
@@ -253,7 +259,6 @@ function App() {
         engineRef.current.receiveInput(raw);
     }
 
-    // Keyboard entry for selected cell
     useEffect(() => {
         function onKeyDown(e) {
             const tag = e.target?.tagName;
@@ -271,19 +276,6 @@ function App() {
         return () => window.removeEventListener("keydown", onKeyDown);
     }, [selectedCell, snapshot.ended, snapshot.config]);
 
-    function applyGridSize(event) {
-        event?.preventDefault?.();
-        const next = Number(cellSizeInput);
-        if (!Number.isFinite(next) || next < 24 || next > 72) {
-            setErrorText("Grid cell size must be between 24 and 72.");
-            return;
-        }
-
-        setErrorText("");
-        setCellSize(next);
-        setGridSizerOpen(false);
-    }
-
     const board = snapshot.gameState?.board || emptyBoard();
 
     function logout() {
@@ -291,17 +283,22 @@ function App() {
         api.navigate("/login");
     }
 
+    function handleLevelChange(val) {
+        setSelectedLevel(val);
+        if (cleanLevelName(val) === "flexible") {
+            setShowCustomModal(true);
+        }
+    }
+
     function handleCustomSubmit(event) {
         event?.preventDefault?.();
-        const grid = Math.max(3, Math.min(9, Number(customSettings.gridSize) || 4));
-        const timer = Math.max(30, Number(customSettings.timer) || 180);
-        setCustomSettings({ gridSize: grid, timer });
+        const grid = Math.max(3, Math.min(12, Number(customSettings.gridSize) || 9));
+        setCustomSettings({ gridSize: grid });
         setShowCustomModal(false);
 
         const puzzle = generateFlexiblePuzzle(grid);
-        startLevel(selectedLevel || "flexible.json", {
+        startLevel(selectedLevel || FLEX_LEVEL, {
             gridSize: grid,
-            timer,
             board: puzzle.board,
             solution: puzzle.solution
         });
@@ -316,9 +313,9 @@ function App() {
             <div className="page-nav">
                 <div className="brand-mark">Sudoku</div>
                 <div className="nav-actions">
-                    <button className="secondary" onClick={() => api.navigate("/home")} >Home</button>
-                    <button className="secondary" onClick={() => api.navigate("/dashboard")} >Dashboard</button>
-                    <div className="avatar-wrap" onClick={() => setAvatarOpen((v) => !v)} >
+                    <button className="secondary" onClick={() => api.navigate("/home")}>Home</button>
+                    <button className="secondary" onClick={() => api.navigate("/dashboard")}>Dashboard</button>
+                    <div className="avatar-wrap" onClick={() => setAvatarOpen((v) => !v)}>
                         <div className="avatar-ring">
                             <div className="avatar-photo" style={{ backgroundImage: `url(${DUMMY_AVATAR})` }} aria-label="Open profile menu"></div>
                             <div className="avatar-initial">{(user?.username || "P").charAt(0).toUpperCase()}</div>
@@ -327,7 +324,7 @@ function App() {
                             <div className="avatar-menu">
                                 <div className="avatar-name">{user?.username || "Player"}</div>
                                 <div className="avatar-email">Signed in</div>
-                                <button className="secondary" onClick={() => api.navigate("/dashboard")} >View dashboard</button>
+                                <button className="secondary" onClick={() => api.navigate("/dashboard")}>View dashboard</button>
                                 <button className="danger" onClick={logout}>Logout</button>
                             </div>
                         ) : null}
@@ -341,14 +338,13 @@ function App() {
                     <div className="top-actions">
                         <select
                             value={selectedLevel}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                setSelectedLevel(val);
-                                if (cleanLevelName(val) === "flexible") setShowCustomModal(true);
-                            }}
+                            onChange={(e) => handleLevelChange(e.target.value)}
                             disabled={loading}
                         >
-                            {levels.map((item) => { const label = cleanLevelName(item); return <option key={item} value={item}>{label}</option>; })}
+                            {levels.map((item) => {
+                                const label = cleanLevelName(item);
+                                return <option key={item} value={item}>{label}</option>;
+                            })}
                         </select>
                         <button
                             style={{ marginLeft: "8px" }}
@@ -361,14 +357,6 @@ function App() {
                             }}
                             disabled={loading}
                         >Restart</button>
-                        <button
-                            type="button"
-                            className="icon-grid-button"
-                            title="Custom grid size"
-                            onClick={() => setGridSizerOpen((value) => !value)}
-                        >
-                            <span className="grid-icon" aria-hidden="true"></span>
-                        </button>
                     </div>
                 </div>
 
@@ -380,25 +368,6 @@ function App() {
 
                 <div className="status">{statusText}</div>
                 {errorText ? <div className="status error">{errorText}</div> : null}
-
-                {gridSizerOpen ? (
-                    <form className="grid-size-panel" onSubmit={applyGridSize}>
-                        <label htmlFor="grid-size-input">Custom cell size</label>
-                        <div className="grid-size-row">
-                            <input
-                                id="grid-size-input"
-                                type="number"
-                                min="24"
-                                max="72"
-                                value={cellSizeInput}
-                                onChange={(e) => setCellSizeInput(e.target.value)}
-                                placeholder="Cell px"
-                            />
-                            <button type="submit">Apply</button>
-                        </div>
-                        <div className="hint">Set cell size from 24 to 72 pixels.</div>
-                    </form>
-                ) : null}
 
                 <div className="board-wrap">
                     <table className="board" style={{ "--cell-size": `${cellSize}px` }}>
@@ -434,7 +403,7 @@ function App() {
             </section>
 
             <section className="card leaderboard-panel">
-                <h2>{cleanLevelName(selectedLevel) || ""} Leaderboard</h2>
+                <h2>{levelLabel ? `${levelLabel} Leaderboard` : "Leaderboard"}</h2>
                 <ol className="leaderboard-list">
                     {leaderboard.map((entry, index) => (
                         <li key={`${entry.username}-${entry.updatedAt || index}`} className="leaderboard-item">
@@ -459,26 +428,16 @@ function App() {
                 <div className="overlay" onClick={() => setShowCustomModal(false)}>
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <h3>Flexible settings</h3>
-                        <p style={{ marginTop: 0 }}>Pick playable grid size (3-9) and timer (seconds) before starting.</p>
+                        <p style={{ marginTop: 0 }}>Choose board size (3-12). A fresh puzzle will be generated for you.</p>
                         <form onSubmit={handleCustomSubmit} className="custom-form">
                             <label className="field">
-                                <span>Playable grid size</span>
+                                <span>Board size (N x N)</span>
                                 <input
                                     type="number"
                                     min="3"
-                                    max="9"
+                                    max="12"
                                     value={customSettings.gridSize}
                                     onChange={(e) => handleCustomInput("gridSize", e.target.value)}
-                                />
-                            </label>
-                            <label className="field">
-                                <span>Timer (seconds)</span>
-                                <input
-                                    type="number"
-                                    min="30"
-                                    step="10"
-                                    value={customSettings.timer}
-                                    onChange={(e) => handleCustomInput("timer", e.target.value)}
                                 />
                             </label>
                             <div className="modal-actions">
