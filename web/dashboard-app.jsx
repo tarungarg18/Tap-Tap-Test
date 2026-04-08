@@ -8,11 +8,14 @@ function DashboardPage() {
     const api = window.TapTapApi;
     const [user, setUser] = useState(api.getUser());
     const [stats, setStats] = useState([]);
-    const [recentScores, setRecentScores] = useState([]);
     const [theme, setTheme] = useState(getStoredTheme);
     const [menuOpen, setMenuOpen] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [error, setError] = useState("");
+    const [leaderboard, setLeaderboard] = useState([]);
+    const [leaderboardPage, setLeaderboardPage] = useState(1);
+    const [leaderboardHasNext, setLeaderboardHasNext] = useState(false);
+    const [leaderboardHasPrev, setLeaderboardHasPrev] = useState(false);
 
     const userRank = user && user.globalRank != null ? user.globalRank : "NA";
     const userRankDisplay = userRank === "NA" ? "NA" : Number(userRank).toLocaleString();
@@ -21,10 +24,21 @@ function DashboardPage() {
 
     const totals = useMemo(() => {
         const totalGames = stats.length;
-        const bestScore = stats.reduce((max, item) => Math.max(max, item.maxScore || 0), 0);
-        const totalRuns = recentScores.length;
-        return { totalGames, bestScore, totalRuns };
-    }, [stats, recentScores]);
+        return { totalGames };
+    }, [stats]);
+
+    async function loadGlobalLeaderboard(page = 1) {
+        setError("");
+        try {
+            const payload = await api.getGlobalLeaderboard(page, 10);
+            setLeaderboard(Array.isArray(payload?.entries) ? payload.entries : []);
+            setLeaderboardPage(payload?.page || page);
+            setLeaderboardHasNext(Boolean(payload?.hasNext));
+            setLeaderboardHasPrev(Boolean(payload?.hasPrev));
+        } catch (err) {
+            setError(err.message || "Failed to load leaderboard");
+        }
+    }
 
     useEffect(() => {
         document.body.classList.remove("theme-light", "theme-dark");
@@ -40,7 +54,7 @@ function DashboardPage() {
                 const data = await api.getDashboard();
                 setUser(data.user || null);
                 setStats(Array.isArray(data.stats) ? data.stats : []);
-                setRecentScores(Array.isArray(data.recentScores) ? data.recentScores : []);
+                await loadGlobalLeaderboard(1);
             } catch (err) {
                 setError(err.message || "Failed to load dashboard");
             }
@@ -199,12 +213,12 @@ function DashboardPage() {
                             <div className="value">{totals.totalGames}</div>
                         </div>
                         <div className="kpi">
-                            <div className="label">Best Score</div>
-                            <div className="value">{totals.bestScore}</div>
+                            <div className="label">Total Score</div>
+                            <div className="value">{userPointsDisplay}</div>
                         </div>
                         <div className="kpi">
-                            <div className="label">Recent Runs</div>
-                            <div className="value">{totals.totalRuns}</div>
+                            <div className="label">Global Rank</div>
+                            <div className="value">{userRankDisplay}</div>
                         </div>
                     </div>
 
@@ -225,22 +239,39 @@ function DashboardPage() {
 
                 <section className="card dashboard-recent-card">
                     <div className="section-heading-row">
-                        <h2>Recent Scores</h2>
-                        <span className="recent-score-badge">Top plays</span>
+                        <h2>Global Leaderboard</h2>
+                        <div className="recent-score-badge">Page {leaderboardPage}</div>
                     </div>
                     <ol className="list dashboard-score-list">
-                        {recentScores.map((item, index) => (
-                            <li key={`${item.gameName}-${item.createdAt}-${index}`} className="list-item">
-                                <span>{index + 1}</span>
+                        {leaderboard.map((item, index) => (
+                            <li key={`${item.userId || item.username}-${index}`} className="list-item">
+                                <span>{(leaderboardPage - 1) * 10 + index + 1}</span>
                                 <span>
-                                    <strong>{item.gameName}</strong>
-                                    <div className="muted" style={{ fontSize: "0.8rem" }}>{item.level} | {item.reason}</div>
+                                    <strong>{item.username}</strong>
                                 </span>
                                 <strong>{item.score}</strong>
                             </li>
                         ))}
                     </ol>
-                    {recentScores.length === 0 ? <div className="muted" style={{ marginTop: "8px" }}>No score submissions yet.</div> : null}
+                    {leaderboard.length === 0 ? <div className="muted" style={{ marginTop: "8px" }}>No leaderboard entries yet.</div> : null}
+                    <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "12px" }}>
+                        <button
+                            type="button"
+                            className="promo-button promo-button-secondary"
+                            onClick={() => loadGlobalLeaderboard(Math.max(1, leaderboardPage - 1))}
+                            disabled={!leaderboardHasPrev}
+                        >
+                            Prev
+                        </button>
+                        <button
+                            type="button"
+                            className="promo-button promo-button-primary"
+                            onClick={() => loadGlobalLeaderboard(leaderboardPage + 1)}
+                            disabled={!leaderboardHasNext}
+                        >
+                            Next
+                        </button>
+                    </div>
                 </section>
             </div>
 

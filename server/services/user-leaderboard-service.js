@@ -62,7 +62,59 @@ async function getUserLeaderboard(userId, options = {}) {
     return { totalScore: entry.totalScore, globalRank, rank: globalRank };
 }
 
+async function getGlobalLeaderboard(options = {}) {
+    const pageRaw = Number(options.page) || 1;
+    const limitRaw = Number(options.limit) || 10;
+    const page = Math.max(1, pageRaw);
+    const limit = Math.max(1, Math.min(50, limitRaw));
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+        Leaderboard.aggregate([
+            { $sort: { totalScore: -1, updatedAt: 1 } },
+            { $skip: skip },
+            { $limit: limit },
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "user",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            { $unwind: "$user" },
+            {
+                $project: {
+                    _id: 0,
+                    userId: "$user._id",
+                    username: "$user.username",
+                    totalScore: "$totalScore",
+                    rank: "$rank"
+                }
+            }
+        ]),
+        Leaderboard.countDocuments()
+    ]);
+
+    const entries = items.map((item, index) => ({
+        userId: String(item.userId),
+        username: item.username,
+        score: item.totalScore,
+        rank: item.rank != null ? item.rank : skip + index + 1
+    }));
+
+    return {
+        entries,
+        page,
+        pageSize: limit,
+        total,
+        hasNext: skip + items.length < total,
+        hasPrev: page > 1
+    };
+}
+
 module.exports = {
     recalcUserLeaderboard,
-    getUserLeaderboard
+    getUserLeaderboard,
+    getGlobalLeaderboard
 };

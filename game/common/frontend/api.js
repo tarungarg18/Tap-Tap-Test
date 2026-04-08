@@ -213,6 +213,11 @@
         });
     }
 
+    function getGlobalLeaderboard(page = 1, limit = 10) {
+        const query = `?page=${encodeURIComponent(String(page))}&limit=${encodeURIComponent(String(limit))}`;
+        return requestJson(`/api/dashboard/leaderboard${query}`, { auth: true });
+    }
+
     globalScope.TapTapApi = {
         getToken,
         setToken,
@@ -234,6 +239,7 @@
         getLeaderboard,
         getAllLeaderboards,
         submitLeaderboard,
-        getDashboard
+        getDashboard,
+        getGlobalLeaderboard
     };
 })(window);
