@@ -63,9 +63,7 @@ function readParsedEnvFile() {
 
 let cache = null;
 
-/**
- * Prefer process.env (Docker / hosting), then parse .env on disk (fixes nodemon / partial injection).
- */
+
 function loadMailEnv() {
     if (cache) {
         return cache;
@@ -98,3 +96,4 @@ module.exports = {
     resetMailEnvCache,
     ENV_PATH
 };
+

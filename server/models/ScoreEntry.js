@@ -41,3 +41,4 @@ scoreEntrySchema.index({ gameName: 1, score: -1 });
 scoreEntrySchema.index({ user: 1, gameName: 1, createdAt: -1 });
 
 module.exports = mongoose.model("ScoreEntry", scoreEntrySchema);
+

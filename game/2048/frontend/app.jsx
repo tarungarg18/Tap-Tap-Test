@@ -1,4 +1,4 @@
-﻿const { useCallback, useEffect, useMemo, useRef, useState, useLayoutEffect } = React;
+const { useCallback, useEffect, useMemo, useRef, useState, useLayoutEffect } = React;
 
 const GAME_NAME = "2048";
 const FLEX_LEVEL = "flexible.json";
@@ -111,7 +111,7 @@ function App() {
             setStatusText(
                 result?.improved
                     ? `New personal best recorded for ${user?.username || "you"}.`
-                    : "Run finished — score did not beat your existing record."
+                    : "Run finished � score did not beat your existing record."
             );
         } catch (err) {
             setErrorText(err.message || "Failed to save score");
@@ -423,3 +423,4 @@ function App() {
 const rootElement = document.getElementById("root");
 const root = ReactDOM.createRoot(rootElement);
 root.render(<App />);
+

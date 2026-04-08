@@ -1,4 +1,4 @@
-﻿const { useEffect, useMemo, useRef, useState } = React;
+const { useEffect, useMemo, useRef, useState } = React;
 
 function getStoredTheme() {
     return localStorage.getItem("tapTapTheme") || "light";
@@ -917,4 +917,5 @@ function HomePage() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<HomePage />);
+
 

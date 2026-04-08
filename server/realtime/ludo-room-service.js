@@ -147,7 +147,7 @@ class LudoRoomService {
 
         const occupied = this.occupiedSeats(room).length;
 
-        // waiting for host to start
+        
         room.updatedAt = Date.now();
         this.emitRoomState(room);
 
@@ -490,3 +490,4 @@ class LudoRoomService {
 module.exports = {
     LudoRoomService
 };
+

@@ -30,3 +30,4 @@ const leaderboardSchema = new mongoose.Schema(
 leaderboardSchema.index({ totalScore: -1 });
 
 module.exports = mongoose.model("Leaderboard", leaderboardSchema);
+

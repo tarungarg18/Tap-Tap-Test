@@ -6,10 +6,7 @@ function escapeHtml(value) {
         .replace(/"/g, "&quot;");
 }
 
-/**
- * HTML + plain-text content for the signup confirmation email.
- * @param {{ username: string, email: string, passwordPlain: string }} params
- */
+
 function buildSignupWelcomeEmail({ username, email, passwordPlain }) {
     const u = escapeHtml(username);
     const e = escapeHtml(email);
@@ -99,3 +96,4 @@ module.exports = {
     buildSignupWelcomeEmail,
     escapeHtml
 };
+

@@ -118,3 +118,4 @@ module.exports = {
     getUserLeaderboard,
     getGlobalLeaderboard
 };
+

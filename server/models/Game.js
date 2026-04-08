@@ -1,14 +1,14 @@
-﻿const mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 const gameSchema = new mongoose.Schema(
     {
-        // Human-friendly name (keeps folder casing, e.g., "Tap", "ludo")
+        
         name: {
             type: String,
             required: true,
             trim: true
         },
-        // Lowercase key used for lookups/uniqueness.
+        
         slug: {
             type: String,
             required: true,
@@ -16,7 +16,7 @@ const gameSchema = new mongoose.Schema(
             trim: true,
             lowercase: true
         },
-        // single | multiplayer
+        
         mode: {
             type: String,
             enum: ["single", "multiplayer"],
@@ -29,3 +29,4 @@ const gameSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Game", gameSchema);
+

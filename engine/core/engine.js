@@ -264,3 +264,4 @@
 
     globalScope.GameEngine = GameEngine;
 })(typeof window !== "undefined" ? window : globalThis);
+

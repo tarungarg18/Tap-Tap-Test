@@ -1,4 +1,4 @@
-﻿(function registerGameBoard(globalScope) {
+(function registerGameBoard(globalScope) {
     const ns = globalScope.TapTap2048Components = globalScope.TapTap2048Components || {};
 
     ns.GameBoard = function GameBoard({ board, boardSize, availableWidth = 520 }) {
@@ -39,3 +39,4 @@
         );
     };
 })(window);
+

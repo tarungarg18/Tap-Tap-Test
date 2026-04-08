@@ -70,10 +70,10 @@ function App() {
     const socketRef = useRef(null);
     const lastOnlineStateRef = useRef(null);
 
-    const [mode, setMode] = useState("online"); // online | local
-    const [view, setView] = useState("lobby"); // lobby | play
+    const [mode, setMode] = useState("online"); 
+    const [view, setView] = useState("lobby"); 
 
-    // local state
+    
     const [playerCountLocal, setPlayerCountLocal] = useState(4);
     const [setupRows, setSetupRows] = useState([
         { name: "", colorKey: "red" },
@@ -90,7 +90,7 @@ function App() {
     const [animationOverrides, setAnimationOverrides] = useState({});
     const [actionBusy, setActionBusy] = useState(false);
 
-    // online state
+    
     const [socketReady, setSocketReady] = useState(false);
     const [socketError, setSocketError] = useState("");
     const [roomState, setRoomState] = useState(null);
@@ -133,7 +133,7 @@ function App() {
         });
     }, [roomState, mySeat]);
 
-    // socket setup
+    
     useEffect(() => {
         if (mode !== "online") return;
         const token = getTokenOrRedirect();
@@ -195,7 +195,7 @@ function App() {
         };
     }, [mode]);
 
-    // helpers
+    
     async function animateOnlineMovement(prevState, nextState) {
         if (!prevState || !nextState) return;
         try {
@@ -365,7 +365,7 @@ function App() {
         [diceRolling, actionBusy, runMoveAnimation]
     );
 
-    // online actions
+    
     function ensureSocket() {
         if (!socketRef.current || !socketReady) {
             setSocketError("Socket not connected.");
@@ -456,7 +456,7 @@ function App() {
         return players.slice().sort((a, b) => (Number(b.finishedTokens) || 0) - (Number(a.finishedTokens) || 0));
     }, [gameState.players]);
 
-    // render helpers
+    
     const activeSetupRows = setupRows.slice(0, playerCountLocal);
 
     function renderLocalSetup() {
@@ -738,3 +738,4 @@ function App() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
+

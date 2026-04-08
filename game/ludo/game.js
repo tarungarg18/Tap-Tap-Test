@@ -684,10 +684,7 @@ class LudoGame {
         return parsed;
     }
 
-    /**
-     * Pass-and-play: exactly four seats, fixed corners. `setup` turn order is player 1 → 2 → 3 → 4.
-     * Each entry: { name: string, colorKey: "red"|"green"|"yellow"|"blue" } (unique colors).
-     */
+    
     static createLocalFourPlayer(setup) {
         if (!Array.isArray(setup) || setup.length !== 4) {
             throw new Error("Ludo requires exactly 4 players");
@@ -762,4 +759,5 @@ if (typeof window !== "undefined") {
 if (typeof module !== "undefined" && module.exports) {
     module.exports = LudoGame;
 }
+
 

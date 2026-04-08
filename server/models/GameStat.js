@@ -29,3 +29,4 @@ gameStatSchema.index({ user: 1, gameName: 1 }, { unique: true });
 gameStatSchema.index({ gameName: 1, maxScore: -1 });
 
 module.exports = mongoose.model("GameStat", gameStatSchema);
+

@@ -5,16 +5,12 @@ const { isMailConfigured, sendTestMail, sendContactAcknowledgementMail } = requi
 
 const router = express.Router();
 
-/**
- * Whether GMAIL + APP_PASSWORD are set (no secrets returned).
- */
+
 router.get("/status", (req, res) => {
     res.json({ configured: isMailConfigured() });
 });
 
-/**
- * Sends a test message to the authenticated user's email (backend / tooling only).
- */
+
 router.post("/test", requireAuth, async (req, res, next) => {
     try {
         if (!isMailConfigured()) {
@@ -85,3 +81,4 @@ router.post("/contact", async (req, res, next) => {
 });
 
 module.exports = router;
+

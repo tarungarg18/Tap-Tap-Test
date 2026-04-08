@@ -36,3 +36,4 @@ router.get("/leaderboard", requireAuth, async (req, res, next) => {
 });
 
 module.exports = router;
+

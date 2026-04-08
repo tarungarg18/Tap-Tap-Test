@@ -683,7 +683,7 @@ input {
     }
 }
 
-/* Dice + roll sit in the wrap margin beside the active home (outside the grid) */
+
 .board-turn-docks {
     position: absolute;
     inset: 0;
@@ -701,7 +701,7 @@ input {
     gap: 4px;
 }
 
-/* Red — left margin, upper (dice above roll) */
+
 .board-turn-docks.corner-red .turn-dock-dice {
     right: 100%;
     top: 17%;
@@ -716,7 +716,7 @@ input {
     margin-right: 10px;
 }
 
-/* Green — right margin, upper */
+
 .board-turn-docks.corner-green .turn-dock-dice {
     left: 100%;
     top: 17%;
@@ -731,7 +731,7 @@ input {
     margin-left: 10px;
 }
 
-/* Blue — left margin, lower */
+
 .board-turn-docks.corner-blue .turn-dock-dice {
     right: 100%;
     top: 69%;
@@ -746,7 +746,7 @@ input {
     margin-right: 10px;
 }
 
-/* Yellow — right margin, lower */
+
 .board-turn-docks.corner-yellow .turn-dock-dice {
     left: 100%;
     top: 69%;
@@ -1178,7 +1178,7 @@ input {
 }
 
 
-/* Online lobby additions */
+
 .mode-switch { display: flex; gap: 8px; margin: 8px 0 16px; }
 .online-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .online-column { background: #f8fafc; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
@@ -1208,7 +1208,7 @@ input {
 .btn.btn-roll { box-shadow: 0 6px 14px rgba(16, 185, 129, 0.35); }
 
 
-/* Smooth transitions */
+
 .slide-in { animation: fadeUp 280ms ease; }
 .slide-up { animation: fadeUp 360ms ease; }
 .fade-in { animation: fadeIn 220ms ease; }
@@ -1229,7 +1229,7 @@ input {
 
 .local-toolbar { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
 
-/* Seats panel */
+
 .online-seats { background: #0b1224; color: #e2e8f0; border-radius: 12px; padding: 12px; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05); }
 
 .seat-row { background: rgba(255,255,255,0.08); }
@@ -1250,3 +1250,4 @@ input {
 .seat-meta { display: flex; flex-direction: column; gap: 2px; }
 .seat-select { min-width: 120px; max-width: 140px; }
 .seat-color-pill { padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.14); font-weight: 700; letter-spacing: 0.05em; }
+

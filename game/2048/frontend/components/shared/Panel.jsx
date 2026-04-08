@@ -6,3 +6,4 @@
         return <section className={panelClass}>{children}</section>;
     };
 })(window);
+

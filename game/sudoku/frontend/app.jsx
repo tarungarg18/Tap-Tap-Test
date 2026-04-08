@@ -222,7 +222,7 @@ function App() {
         };
     }, [api, loadLeaderboard, stopEngine]);
 
-    // keep URL in sync so refresh preserves selection
+    
     useEffect(() => {
         if (!selectedLevel) return;
         const url = new URL(window.location.href);

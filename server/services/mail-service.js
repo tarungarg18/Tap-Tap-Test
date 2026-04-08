@@ -1,8 +1,8 @@
-﻿const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 
 const { buildSignupWelcomeEmail } = require("../templates/signup-welcome-email");
 
-// Reads mail credentials only from environment variables to keep setup simple.
+
 function readMailEnv() {
     const user =
         process.env.GMAIL ||
@@ -190,3 +190,4 @@ module.exports = {
     sendTestMail,
     sendContactAcknowledgementMail
 };
+

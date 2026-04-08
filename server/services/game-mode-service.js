@@ -1,4 +1,4 @@
-﻿const Game = require("../models/Game");
+const Game = require("../models/Game");
 const User = require("../models/User");
 const { listGames } = require("./game-service");
 
@@ -44,7 +44,7 @@ async function syncGamesWithFilesystem() {
         await Game.bulkWrite(bulkOps, { ordered: false });
     }
 
-    // Return only games that currently exist on disk
+    
     return Game.find({ slug: { $in: activeSlugs } }).sort({ name: 1 }).lean();
 }
 
@@ -74,3 +74,4 @@ module.exports = {
     listGamesWithModes,
     getGameSummary
 };
+
