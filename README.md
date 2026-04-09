@@ -145,7 +145,6 @@ Tap-Tap-Test/
 |   |-- styles.css
 |   |-- public/
 |
-|-- .env
 |-- .env.example
 |-- package.json
 |-- package-lock.json
