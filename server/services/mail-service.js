@@ -1,34 +1,32 @@
 const nodemailer = require("nodemailer");
 
 const { buildSignupWelcomeEmail } = require("../templates/signup-welcome-email");
-
+const { loadMailEnv } = require("../utils/mail-env");
 
 function readMailEnv() {
-    const user =
-        process.env.GMAIL ||
-        process.env.SMTP_USER ||
-        process.env.EMAIL_USER ||
-        process.env.MAIL_USER ||
-        process.env.GMAIL_USER ||
-        process.env.GMAIL_EMAIL ||
-        "";
-
-    const pass =
-        process.env.APP_PASSWORD ||
-        process.env.GMAIL_APP_PASSWORD ||
-        process.env.SMTP_PASS ||
-        process.env.SMTP_PASSWORD ||
-        "";
-
+    const { user, pass } = loadMailEnv();
     return {
-        user: String(user).trim(),
-        pass: String(pass).replace(/\s/g, "").trim()
+        user: String(user || "").trim(),
+        pass: String(pass || "").trim()
     };
 }
 
-function isMailConfigured() {
-    const { user, pass } = readMailEnv();
-    return Boolean(user && pass);
+function buildTransportConfig(user, pass) {
+    if (process.env.SMTP_HOST) {
+        const port = Number(process.env.SMTP_PORT) || 587;
+        const secure = process.env.SMTP_SECURE === "true" || port === 465;
+        return {
+            host: process.env.SMTP_HOST,
+            port,
+            secure,
+            auth: { user, pass }
+        };
+    }
+
+    return {
+        service: "gmail",
+        auth: { user, pass }
+    };
 }
 
 function createTransporter() {
@@ -37,16 +35,36 @@ function createTransporter() {
         return null;
     }
 
-    return nodemailer.createTransport({
-        service: "gmail",
-        auth: { user, pass }
-    });
+    return nodemailer.createTransport(buildTransportConfig(user, pass));
+}
+
+function mailNotConfiguredError() {
+    const err = new Error("Mail is not configured (set GMAIL and APP_PASSWORD)");
+    err.status = 503;
+    return err;
+}
+
+async function safeSend(transporter, payload, contextLabel) {
+    try {
+        await transporter.sendMail(payload);
+        return { sent: true };
+    } catch (err) {
+        console.error(`Tap-Tap mail failed (${contextLabel}):`, err.message, err.response || err.responseCode || "");
+        const wrapped = new Error("Email delivery failed: " + err.message);
+        wrapped.status = 502;
+        throw wrapped;
+    }
+}
+
+function isMailConfigured() {
+    const { user, pass } = readMailEnv();
+    return Boolean(user && pass);
 }
 
 async function sendSignupWelcomeMail({ to, username, passwordPlain }) {
     const transporter = createTransporter();
     if (!transporter) {
-        console.warn("Tap-Tap mail: set GMAIL and APP_PASSWORD in .env to enable email.");
+        console.warn("Tap-Tap mail: set GMAIL and APP_PASSWORD in env to enable email.");
         return { sent: false, reason: "not_configured" };
     }
 
@@ -59,35 +77,64 @@ async function sendSignupWelcomeMail({ to, username, passwordPlain }) {
     const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
     const from = `"${fromName}" <${readMailEnv().user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject,
-        text,
-        html
-    });
-    
-    return { sent: true };
+    return safeSend(
+        transporter,
+        {
+            from,
+            to,
+            subject,
+            text,
+            html
+        },
+        "signup_welcome"
+    );
 }
 
 async function sendTestMail(to) {
     const transporter = createTransporter();
     if (!transporter) {
-        const err = new Error("Mail is not configured (set GMAIL and APP_PASSWORD)");
-        err.status = 503;
-        throw err;
+        throw mailNotConfiguredError();
     }
 
     const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
     const from = `"${fromName}" <${readMailEnv().user}>`;
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject: "Tap Tap - mail test",
-        text: "If you received this, Nodemailer and Gmail SMTP are working.",
-        html: "<p>If you received this, Nodemailer and Gmail SMTP are working.</p>"
-    });
+    return safeSend(
+        transporter,
+        {
+            from,
+            to,
+            subject: "Tap Tap - mail test",
+            text: "If you received this, Nodemailer and SMTP are working.",
+            html: "<p>If you received this, Nodemailer and SMTP are working.</p>"
+        },
+        "mail_test"
+    );
+}
+
+async function sendContactAcknowledgementMail({ to, name, email, phone, message }) {
+    const transporter = createTransporter();
+    if (!transporter) {
+        throw mailNotConfiguredError();
+    }
+
+    const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
+    const from = `"${fromName}" <${readMailEnv().user}>`;
+
+    const { subject, text, html } = buildContactAcknowledgementEmail({ name, email, phone, message });
+
+    return safeSend(
+        transporter,
+        {
+            from,
+            to,
+            replyTo: readMailEnv().user,
+            subject,
+            text,
+            html
+        },
+        "contact_ack"
+    );
 }
 
 function buildContactAcknowledgementEmail({ name, email, phone, message }) {
@@ -160,34 +207,9 @@ function buildContactAcknowledgementEmail({ name, email, phone, message }) {
     };
 }
 
-async function sendContactAcknowledgementMail({ to, name, email, phone, message }) {
-    const transporter = createTransporter();
-    if (!transporter) {
-        const err = new Error("Mail is not configured (set GMAIL and APP_PASSWORD)");
-        err.status = 503;
-        throw err;
-    }
-
-    const { subject, text, html } = buildContactAcknowledgementEmail({ name, email, phone, message });
-    const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
-    const from = `"${fromName}" <${readMailEnv().user}>`;
-
-    await transporter.sendMail({
-        from,
-        to,
-        replyTo: readMailEnv().user,
-        subject,
-        text,
-        html
-    });
-
-    return { sent: true };
-}
-
 module.exports = {
     isMailConfigured,
     sendSignupWelcomeMail,
     sendTestMail,
     sendContactAcknowledgementMail
 };
-

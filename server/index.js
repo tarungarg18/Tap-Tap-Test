@@ -1,15 +1,20 @@
+const fs = require("fs");
 const path = require("path");
+const dotenv = require("dotenv");
+const http = require("http");
 
 const envRoot = path.join(__dirname, "..");
-const dotenv = require("dotenv");
+const envPath = path.join(envRoot, ".env");
 
-const envResult = dotenv.config({ path: path.join(envRoot, ".env") });
-
-if (envResult.error) {
-    console.warn(`Tap-Tap: could not read .env at ${path.join(envRoot, ".env")}: ${envResult.error.message}`);
+// Load .env only if the file exists; Render/Vercel inject env vars directly
+if (fs.existsSync(envPath)) {
+    const envResult = dotenv.config({ path: envPath });
+    if (envResult.error) {
+        console.warn(`Tap-Tap: could not read .env at ${envPath}: ${envResult.error.message}`);
+    }
+} else if (process.env.NODE_ENV !== "production") {
+    console.info(`Tap-Tap: no .env file at ${envPath}, relying on process.env`);
 }
-
-const http = require("http");
 
 const { createApp } = require("./app");
 const { connectMongo } = require("./db/connect");
@@ -35,4 +40,3 @@ async function startServer() {
 }
 
 startServer();
-
