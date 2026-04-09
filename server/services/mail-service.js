@@ -15,18 +15,7 @@ function buildTransporter() {
     const { user, pass } = readMailEnv();
     if (!user || !pass) return null;
 
-    // If custom SMTP is provided, use it; otherwise default to Gmail.
-    if (process.env.SMTP_HOST) {
-        const port = Number(process.env.SMTP_PORT) || 587;
-        const secure = process.env.SMTP_SECURE === "true" || port === 465;
-        return nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port,
-            secure,
-            auth: { user, pass }
-        });
-    }
-
+    // Simplest possible: use Gmail service with app password
     return nodemailer.createTransport({
         service: "gmail",
         auth: { user, pass }
@@ -83,8 +72,8 @@ async function sendTestMail(to) {
             from,
             to,
             subject: "Tap Tap - mail test",
-            text: "If you received this, Nodemailer and SMTP are working.",
-            html: "<p>If you received this, Nodemailer and SMTP are working.</p>"
+            text: "If you received this, Nodemailer and Gmail are working.",
+            html: "<p>If you received this, Nodemailer and Gmail are working.</p>"
         },
         "mail_test"
     );
