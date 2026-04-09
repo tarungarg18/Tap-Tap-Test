@@ -11,31 +11,26 @@ function readMailEnv() {
     };
 }
 
-function buildTransportConfig(user, pass) {
+function buildTransporter() {
+    const { user, pass } = readMailEnv();
+    if (!user || !pass) return null;
+
+    // If custom SMTP is provided, use it; otherwise default to Gmail.
     if (process.env.SMTP_HOST) {
         const port = Number(process.env.SMTP_PORT) || 587;
         const secure = process.env.SMTP_SECURE === "true" || port === 465;
-        return {
+        return nodemailer.createTransport({
             host: process.env.SMTP_HOST,
             port,
             secure,
             auth: { user, pass }
-        };
+        });
     }
 
-    return {
+    return nodemailer.createTransport({
         service: "gmail",
         auth: { user, pass }
-    };
-}
-
-function createTransporter() {
-    const { user, pass } = readMailEnv();
-    if (!user || !pass) {
-        return null;
-    }
-
-    return nodemailer.createTransport(buildTransportConfig(user, pass));
+    });
 }
 
 function mailNotConfiguredError() {
@@ -49,7 +44,7 @@ async function safeSend(transporter, payload, contextLabel) {
         await transporter.sendMail(payload);
         return { sent: true };
     } catch (err) {
-        console.error(`Tap-Tap mail failed (${contextLabel}):`, err.message, err.response || err.responseCode || "");
+        console.error(`Tap-Tap mail failed (${contextLabel}):`, err.message, err.responseCode || "", err.response || "");
         const wrapped = new Error("Email delivery failed: " + err.message);
         wrapped.status = 502;
         throw wrapped;
@@ -62,39 +57,22 @@ function isMailConfigured() {
 }
 
 async function sendSignupWelcomeMail({ to, username, passwordPlain }) {
-    const transporter = createTransporter();
+    const transporter = buildTransporter();
     if (!transporter) {
         console.warn("Tap-Tap mail: set GMAIL and APP_PASSWORD in env to enable email.");
         return { sent: false, reason: "not_configured" };
     }
 
-    const { subject, text, html } = buildSignupWelcomeEmail({
-        username,
-        email: to,
-        passwordPlain
-    });
-
+    const { subject, text, html } = buildSignupWelcomeEmail({ username, email: to, passwordPlain });
     const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
     const from = `"${fromName}" <${readMailEnv().user}>`;
 
-    return safeSend(
-        transporter,
-        {
-            from,
-            to,
-            subject,
-            text,
-            html
-        },
-        "signup_welcome"
-    );
+    return safeSend(transporter, { from, to, subject, text, html }, "signup_welcome");
 }
 
 async function sendTestMail(to) {
-    const transporter = createTransporter();
-    if (!transporter) {
-        throw mailNotConfiguredError();
-    }
+    const transporter = buildTransporter();
+    if (!transporter) throw mailNotConfiguredError();
 
     const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
     const from = `"${fromName}" <${readMailEnv().user}>`;
@@ -113,10 +91,8 @@ async function sendTestMail(to) {
 }
 
 async function sendContactAcknowledgementMail({ to, name, email, phone, message }) {
-    const transporter = createTransporter();
-    if (!transporter) {
-        throw mailNotConfiguredError();
-    }
+    const transporter = buildTransporter();
+    if (!transporter) throw mailNotConfiguredError();
 
     const fromName = process.env.MAIL_FROM_NAME || "Tap Tap";
     const from = `"${fromName}" <${readMailEnv().user}>`;
