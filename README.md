@@ -1,31 +1,21 @@
-# Tap-Tap Platform
+# Tap-Tap Game
 
-Tap-Tap is a browser-first multi-game platform built with Node.js, Express, MongoDB, and React UMD pages. It combines authentication, dashboards, leaderboards, JSON-driven level configuration, and multiple playable games in a single web app.
+This Project is a browser-first multi-game platform built with Node.js, Express, MongoDB, and React UMD pages. It combines authentication, dashboards, leaderboards, JSON-driven level configuration, and multiple playable games in a single web app.
 
-This repository currently includes:
+Currently included Games:
 - `Tap`
 - `Sudoku`
 - `2048`
 - `Ludo`
 
-It also includes:
-- signup and login
-- JWT-protected APIs
-- per-user dashboard data
-- score tracking and leaderboards
-- configurable `flexible.json` game setups
-- email support with Gmail SMTP
-- dedicated `About Us` and `Contact Us` pages
-- real-time multiplayer infrastructure for Ludo with Socket.IO
+## Deployed Link
+https://gameshub-4gc7.onrender.com
 
 ## Highlights
 
 - Multi-page web experience with Home, Login, Signup, Dashboard, About, Contact, and Game Info pages
-- Browser-based game loading through `GET /games/:gameName`
 - MongoDB-backed users, score entries, game stats, and leaderboard data
 - Protected APIs for profile, dashboard, flexible game config, and score submission
-- Contact form acknowledgement email flow
-- Signup welcome email support
 - Shared engine utilities for score and timer systems
 - JSON-driven level files for each game
 
@@ -38,7 +28,7 @@ It also includes:
 - bcryptjs
 - Nodemailer
 - Socket.IO
-- React 18 UMD + Babel in the browser
+- React
 - Plain CSS
 
 ## Project Structure
@@ -240,25 +230,9 @@ MAIL_FROM_NAME=Tap Tap
 
 - `MONGODB_URI`
 - `JWT_SECRET`
-
-### Usually Needed
-
 - `PORT`
-
-### Needed For Email Features
-
 - `GMAIL`
 - `APP_PASSWORD`
-
-Supported mail aliases also exist in the codebase, including:
-- `SMTP_USER`
-- `SMTP_PASS`
-- `EMAIL_USER`
-- `MAIL_USER`
-- `GMAIL_USER`
-- `GMAIL_EMAIL`
-- `GMAIL_APP_PASSWORD`
-- `SMTP_PASSWORD`
 
 ## Local Setup
 
@@ -288,15 +262,6 @@ Development run with auto-reload:
 
 ```bash
 npm run dev
-```
-
-## NPM Scripts
-
-```bash
-npm start
-npm run start:web
-npm run dev
-npm run dev:web
 ```
 
 Current script behavior:
@@ -331,24 +296,6 @@ The platform tracks user performance and exposes:
 - max score summaries
 - recent score history
 
-## Email Features
-
-The project includes two email-related flows:
-
-### Signup welcome email
-
-When mail is configured, new users can receive a welcome email.
-
-### Contact acknowledgement email
-
-The Contact page allows users to submit:
-- name
-- email
-- phone
-- message
-
-The backend validates the request and sends an acknowledgement email when Gmail SMTP is configured.
-
 ## Real-Time Multiplayer
 
 Ludo includes real-time multiplayer infrastructure through Socket.IO.
@@ -364,29 +311,6 @@ This area is the foundation for:
 - multiplayer synchronization
 - timeout handling
 
-## Customization Guide
-
-### Update branding
-
-You will likely want to edit:
-- `web/styles.css`
-- `web/home-app.jsx`
-- `web/about-app.jsx`
-- `web/contact-app.jsx`
-
-### Update contact information
-
-Search for the current names and emails in:
-- `web/contact-app.jsx`
-- `server/services/mail-service.js`
-
-### Update About page content
-
-Edit:
-- `web/about-app.jsx`
-
-This page already contains placeholder sections and ad/promo blocks intended for later customization.
-
 ### Add new games
 
 A new game usually needs:
@@ -395,44 +319,6 @@ A new game usually needs:
 - level JSON files
 - a frontend entry under `game/<name>/frontend/`
 - recognition in backend game discovery logic if needed
-
-## Suggested Production Improvements
-
-If this project is going beyond local development, recommended next steps include:
-- add automated tests
-- add API request validation library support
-- add linting and formatting
-- move frontend build to Vite/Next/React build tooling
-- add rate limiting for auth and contact endpoints
-- add CSRF and security hardening where appropriate
-- add structured logging
-- add deployment and CI documentation
-- separate development and production config
-
-## Troubleshooting
-
-### Server does not start
-
-Check:
-- MongoDB is running
-- `.env` exists
-- `MONGODB_URI` is valid
-- `JWT_SECRET` is set
-
-### Emails are not sending
-
-Check:
-- `GMAIL` is set
-- `APP_PASSWORD` is set
-- you are using a Gmail App Password, not the normal Gmail password
-- `.env` is in the project root
-
-### Protected API calls fail
-
-Check:
-- the user is logged in
-- the token is present in storage
-- the request is sending the `Authorization` header
 
 ## Authors
 
@@ -446,4 +332,3 @@ Current `package.json` license field:
 ```text
 ISC
 ```
-
